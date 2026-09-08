@@ -1,0 +1,47 @@
+name: school_erp
+description: "Enterprise School Management System with Unified RBAC (Admin, Teacher, Parent) Built with Flutter, Bloc, and GoRouter."
+publish_to: "none"
+version: 1.0.0+1
+
+environment:
+  sdk: ">=3.3.0 <4.0.0"
+  flutter: ">=3.19.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # State Management
+  flutter_bloc: ^8.1.6
+  equatable: ^2.0.5
+
+  # Declarative Routing
+  go_router: ^14.6.2
+
+  # Networking & Storage
+  dio: ^5.7.0
+  flutter_secure_storage: ^9.2.2
+
+  # Calendar & Media
+  table_calendar: ^3.1.2
+  file_picker: ^8.1.4
+
+  # Documents & Printing
+  pdf: ^3.11.1
+  printing: ^5.13.2
+
+  # Notifications
+  firebase_messaging: ^15.1.4
+
+  # Styling & Utilities
+  google_fonts: ^6.2.1
+  intl: ^0.19.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.2
+  bloc_test: ^9.1.7
+
+flutter:
+  uses-material-design: true
