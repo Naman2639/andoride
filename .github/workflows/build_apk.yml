@@ -28,10 +28,18 @@ jobs:
           channel: 'stable'
           cache: true
 
+      - name: Configure Android Project
+        run: |
+          flutter create --platforms=android --org=com.edugovernance .
+          mkdir -p android
+          echo "android.newDsl=false" >> android/gradle.properties
+          echo "android.useAndroidX=true" >> android/gradle.properties
+          echo "android.enableJetifier=true" >> android/gradle.properties
+
       - name: Install Dependencies
         run: flutter pub get
 
-      - name: Run Tests
+      - name: Run Unit Tests
         run: flutter test
 
       - name: Build Android Release APK
