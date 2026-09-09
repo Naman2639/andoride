@@ -26,6 +26,9 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
+    _tabController.addListener(() {
+      if (mounted) setState(() {});
+    });
   }
 
   @override
@@ -210,7 +213,7 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                                   Tab(text: 'Password'),
                                   Tab(text: 'One-Time OTP'),
                                 ],
-                                onChanged: (_) => setState(() {}),
+                                onTap: (_) => setState(() {}),
                               ),
                             ),
                             const SizedBox(height: 24),

@@ -59,7 +59,7 @@ class AppTheme {
         color: textDark,
       ),
     ),
-    cardTheme: CardTheme(
+    cardTheme: CardThemeData(
       color: cardBg,
       elevation: 1.5,
       shadowColor: Colors.black.withOpacity(0.06),
