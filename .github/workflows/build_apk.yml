@@ -30,12 +30,11 @@ jobs:
 
       - name: Configure Android Project
         run: |
-          flutter create --platforms=android --org=com.edugovernance --project-name=school_erp .
-          git checkout HEAD -- test/widget_test.dart 2>/dev/null || true
-          mkdir -p android
-          echo "android.newDsl=false" >> android/gradle.properties
-          echo "android.useAndroidX=true" >> android/gradle.properties
-          echo "android.enableJetifier=true" >> android/gradle.properties
+          # Ensure Gradle wrapper uses a compatible version (8.9)
+          sed -i 's|gradle-.*-all.zip|gradle-8.9-all.zip|' android/gradle/wrapper/gradle-wrapper.properties
+          # Ensure required Android properties are set
+          grep -q 'android.useAndroidX' android/gradle.properties || echo "android.useAndroidX=true" >> android/gradle.properties
+          grep -q 'android.enableJetifier' android/gradle.properties || echo "android.enableJetifier=true" >> android/gradle.properties
 
       - name: Install Dependencies
         run: flutter pub get
