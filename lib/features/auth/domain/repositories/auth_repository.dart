@@ -20,6 +20,12 @@ abstract class AuthRepository {
     required String otp,
   });
 
+  /// Authenticate using Google Account
+  Future<User> loginWithGoogle({
+    required String email,
+    String? displayName,
+  });
+
   /// Re-validate existing local session upon app launch
   Future<User?> checkAuthStatus();
 

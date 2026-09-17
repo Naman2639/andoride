@@ -6,6 +6,7 @@ import 'core/session/session_manager.dart';
 import 'core/storage/secure_storage_service.dart';
 import 'features/auth/data/datasources/auth_local_data_source.dart';
 import 'features/auth/data/datasources/auth_remote_data_source.dart';
+import 'features/auth/data/datasources/user_registry_service.dart';
 import 'features/auth/data/repositories/auth_repository_impl.dart';
 import 'features/auth/presentation/bloc/auth_bloc.dart';
 import 'features/auth/presentation/bloc/auth_event.dart';
@@ -27,7 +28,8 @@ void main() async {
     },
   );
 
-  // 4. Instantiate Remote & Local Data Sources
+  // 4. Instantiate Remote, Local & Registry Data Sources
+  final userRegistryService = UserRegistryService(storageService: storageService);
   final remoteDataSource = AuthRemoteDataSourceImpl(dio: apiClient.dio);
   final localDataSource = AuthLocalDataSourceImpl(storageService: storageService);
 
@@ -41,11 +43,12 @@ void main() async {
     },
   );
 
-  // 6. Instantiate Auth Repository
+  // 6. Instantiate Auth Repository with Dynamic Registry
   final authRepository = AuthRepositoryImpl(
     remoteDataSource: remoteDataSource,
     localDataSource: localDataSource,
     sessionManager: sessionManager,
+    userRegistryService: userRegistryService,
   );
 
   // 7. Initialize Auth BLoC & Dispatch Initial State Check

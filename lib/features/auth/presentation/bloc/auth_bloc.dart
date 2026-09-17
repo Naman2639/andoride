@@ -15,12 +15,29 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         _sessionManager = sessionManager,
         super(const AuthInitial()) {
     on<AppStarted>(_onAppStarted);
+    on<GoogleSignInSubmitted>(_onGoogleSignInSubmitted);
     on<LoginSubmitted>(_onLoginSubmitted);
     on<OtpRequested>(_onOtpRequested);
     on<OtpVerified>(_onOtpVerified);
     on<UserActivityRecorded>(_onUserActivityRecorded);
     on<SessionTimedOut>(_onSessionTimedOut);
     on<LogoutRequested>(_onLogoutRequested);
+  }
+
+  Future<void> _onGoogleSignInSubmitted(
+    GoogleSignInSubmitted event,
+    Emitter<AuthState> emit,
+  ) async {
+    emit(const AuthLoading(message: 'Verifying Google Account with School Records...'));
+    try {
+      final user = await _authRepository.loginWithGoogle(
+        email: event.email,
+        displayName: event.displayName,
+      );
+      emit(Authenticated(user: user));
+    } catch (e) {
+      emit(AuthError(e.toString().replaceAll('Exception: ', '')));
+    }
   }
 
   Future<void> _onAppStarted(AppStarted event, Emitter<AuthState> emit) async {

@@ -27,4 +27,7 @@ class RoutePaths {
   static const String parentFeeLedger = '/parent/fees';
   static const String parentHomeworkFeed = '/parent/homework';
   static const String parentReports = '/parent/reports';
+
+  // Student Portal & Sub-routes
+  static const String studentDashboard = '/student';
 }

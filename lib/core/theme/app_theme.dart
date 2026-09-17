@@ -18,6 +18,10 @@ class AppTheme {
   static const Color parentAccent = Color(0xFF4F46E5);  // Indigo 600
   static const Color parentSurface = Color(0xFFEEF2FF);
 
+  static const Color studentPrimary = Color(0xFF0369A1); // Sky 700
+  static const Color studentAccent = Color(0xFF0284C7);  // Sky 600
+  static const Color studentSurface = Color(0xFFF0F9FF);
+
   // Neutral Colors
   static const Color textDark = Color(0xFF1E293B);
   static const Color textMuted = Color(0xFF64748B);
@@ -34,6 +38,8 @@ class AppTheme {
         return teacherPrimary;
       case UserRole.parent:
         return parentPrimary;
+      case UserRole.student:
+        return studentPrimary;
       case null:
         return const Color(0xFF1E3A8A);
     }

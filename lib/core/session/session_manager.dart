@@ -24,6 +24,8 @@ class SessionManager {
         return AppConstants.teacherSessionTimeout; // 8 hours for school day operations
       case UserRole.parent:
         return AppConstants.parentSessionTimeout; // 30 days persistent mobile session
+      case UserRole.student:
+        return AppConstants.studentSessionTimeout; // 30 days persistent student session
     }
   }
 

@@ -5,20 +5,26 @@ import '../../domain/entities/user_role.dart';
 import '../../domain/repositories/auth_repository.dart';
 import '../datasources/auth_local_data_source.dart';
 import '../datasources/auth_remote_data_source.dart';
+import '../datasources/user_registry_service.dart';
 import '../models/user_model.dart';
 
 class AuthRepositoryImpl implements AuthRepository {
   final AuthRemoteDataSource _remoteDataSource;
   final AuthLocalDataSource _localDataSource;
   final SessionManager _sessionManager;
+  final UserRegistryService _userRegistryService;
 
   AuthRepositoryImpl({
     required AuthRemoteDataSource remoteDataSource,
     required AuthLocalDataSource localDataSource,
     required SessionManager sessionManager,
+    required UserRegistryService userRegistryService,
   })  : _remoteDataSource = remoteDataSource,
         _localDataSource = localDataSource,
-        _sessionManager = sessionManager;
+        _sessionManager = sessionManager,
+        _userRegistryService = userRegistryService;
+
+  UserRegistryService get userRegistry => _userRegistryService;
 
   @override
   Future<User> loginWithPassword({
@@ -51,6 +57,26 @@ class AuthRepositoryImpl implements AuthRepository {
 
     await _persistSession(result.user, result.accessToken, result.refreshToken);
     return result.user;
+  }
+
+  @override
+  Future<User> loginWithGoogle({
+    required String email,
+    String? displayName,
+  }) async {
+    final user = await _userRegistryService.findByGoogleEmail(email);
+    if (user == null) {
+      throw Exception(
+        'Google account "$email" is not registered in EduGovernance records.\n\n'
+        '• Teachers must be added by the School Admin.\n'
+        '• Students must be enrolled by their Class Teacher.\n\n'
+        'Please contact your school administrator or teacher.',
+      );
+    }
+
+    final token = 'mock_google_jwt_${DateTime.now().millisecondsSinceEpoch}';
+    await _persistSession(user, token, null);
+    return user;
   }
 
   @override

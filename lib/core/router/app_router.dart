@@ -9,6 +9,8 @@ import '../../features/auth/presentation/views/login_screen.dart';
 import '../../features/auth/presentation/views/otp_verification_screen.dart';
 import '../../features/parent_portal/presentation/views/parent_dashboard_screen.dart';
 import '../../features/parent_portal/presentation/views/parent_shell_screen.dart';
+import '../../features/student_portal/presentation/views/student_dashboard_screen.dart';
+import '../../features/student_portal/presentation/views/student_shell_screen.dart';
 import '../../features/teacher_portal/presentation/views/teacher_dashboard_screen.dart';
 import '../../features/teacher_portal/presentation/views/teacher_shell_screen.dart';
 import 'route_paths.dart';
@@ -19,6 +21,7 @@ final GlobalKey<NavigatorState> rootNavigatorKey = GlobalKey<NavigatorState>(deb
 final GlobalKey<NavigatorState> adminNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'admin');
 final GlobalKey<NavigatorState> teacherNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'teacher');
 final GlobalKey<NavigatorState> parentNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'parent');
+final GlobalKey<NavigatorState> studentNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'student');
 
 /// Centralized declarative GoRouter configuration with strict RBAC guards
 class AppRouter {
@@ -65,23 +68,24 @@ class AppRouter {
         }
 
         // 4. Strict Role-Based Boundary Guards (Anti-Privilege Escalation)
-        // Ensure no user can access another role's portal through deep linking or URL tampering
         final isAdminRoute = matchedLocation.startsWith('/admin');
         final isTeacherRoute = matchedLocation.startsWith('/teacher');
         final isParentRoute = matchedLocation.startsWith('/parent');
+        final isStudentRoute = matchedLocation.startsWith('/student');
 
         if (isAdminRoute && userRole != UserRole.admin) {
-          // Unauthorized access attempt to Admin portal
           return userRole.defaultRoute;
         }
 
         if (isTeacherRoute && userRole != UserRole.teacher) {
-          // Unauthorized access attempt to Teacher portal
           return userRole.defaultRoute;
         }
 
         if (isParentRoute && userRole != UserRole.parent) {
-          // Unauthorized access attempt to Parent portal
+          return userRole.defaultRoute;
+        }
+
+        if (isStudentRoute && userRole != UserRole.student) {
           return userRole.defaultRoute;
         }
 
@@ -142,6 +146,18 @@ class AppRouter {
             GoRoute(
               path: RoutePaths.parentDashboard,
               builder: (context, state) => const ParentDashboardScreen(),
+            ),
+          ],
+        ),
+
+        // --- Student Portal Shell Route ---
+        ShellRoute(
+          navigatorKey: studentNavigatorKey,
+          builder: (context, state, child) => StudentShellScreen(child: child),
+          routes: [
+            GoRoute(
+              path: RoutePaths.studentDashboard,
+              builder: (context, state) => const StudentDashboardScreen(),
             ),
           ],
         ),

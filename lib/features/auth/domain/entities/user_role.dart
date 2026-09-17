@@ -2,7 +2,8 @@
 enum UserRole {
   admin,
   teacher,
-  parent;
+  parent,
+  student;
 
   static UserRole fromString(String? role) {
     switch (role?.trim().toUpperCase()) {
@@ -15,6 +16,9 @@ enum UserRole {
       case 'PARENT':
       case 'GUARDIAN':
         return UserRole.parent;
+      case 'STUDENT':
+      case 'PUPIL':
+        return UserRole.student;
       default:
         throw ArgumentError('Unrecognized UserRole: $role');
     }
@@ -28,6 +32,8 @@ enum UserRole {
         return 'TEACHER';
       case UserRole.parent:
         return 'PARENT';
+      case UserRole.student:
+        return 'STUDENT';
     }
   }
 
@@ -36,9 +42,11 @@ enum UserRole {
       case UserRole.admin:
         return 'School Manager';
       case UserRole.teacher:
-        return 'Teacher & Staff';
+        return 'Teacher & Faculty';
       case UserRole.parent:
         return 'Parent & Guardian';
+      case UserRole.student:
+        return 'Student';
     }
   }
 
@@ -50,6 +58,8 @@ enum UserRole {
         return '/teacher';
       case UserRole.parent:
         return '/parent';
+      case UserRole.student:
+        return '/student';
     }
   }
 }

@@ -12,6 +12,20 @@ class AppStarted extends AuthEvent {
   const AppStarted();
 }
 
+/// Dispatched when authenticating via Google Account
+class GoogleSignInSubmitted extends AuthEvent {
+  final String email;
+  final String? displayName;
+
+  const GoogleSignInSubmitted({
+    required this.email,
+    this.displayName,
+  });
+
+  @override
+  List<Object?> get props => [email, displayName];
+}
+
 /// Dispatched when submitting Mobile/Email + Password
 class LoginSubmitted extends AuthEvent {
   final String identifier;

@@ -75,6 +75,15 @@ class SecureStorageService {
     return DateTime.fromMillisecondsSinceEpoch(millis);
   }
 
+  // --- Custom Persistent Data (Teachers, Students, Registry) ---
+  Future<void> saveCustomData(String key, String value) async {
+    await _storage.write(key: key, value: value);
+  }
+
+  Future<String?> getCustomData(String key) async {
+    return await _storage.read(key: key);
+  }
+
   // --- Clear / Logout ---
   Future<void> clearAll() async {
     await _storage.delete(key: AppConstants.keyAuthToken);

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
-import '../../../../core/router/route_paths.dart';
+import '../../../../core/storage/secure_storage_service.dart';
+import '../../data/datasources/user_registry_service.dart';
+import '../../data/models/user_model.dart';
+import '../../domain/entities/user_role.dart';
 import '../bloc/auth_bloc.dart';
 import '../bloc/auth_event.dart';
 import '../bloc/auth_state.dart';
@@ -14,110 +16,368 @@ class LoginScreen extends StatefulWidget {
   State<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStateMixin {
-  final _identifierController = TextEditingController();
-  final _passwordController = TextEditingController();
-  final _formKey = GlobalKey<FormState>();
-
-  late TabController _tabController;
-  bool _obscurePassword = true;
+class _LoginScreenState extends State<LoginScreen> {
+  final _emailController = TextEditingController();
+  late final UserRegistryService _registryService;
+  List<UserModel> _availableGoogleProfiles = [];
+  bool _isLoadingProfiles = true;
 
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 2, vsync: this);
-    _tabController.addListener(() {
-      if (mounted) setState(() {});
-    });
+    _registryService = UserRegistryService(storageService: SecureStorageService());
+    _loadProfiles();
+  }
+
+  Future<void> _loadProfiles() async {
+    final teachers = await _registryService.getAllTeachers();
+    final students = await _registryService.getAllStudents();
+    final defaults = _registryService.getDemoGoogleProfiles();
+
+    final all = <UserModel>[...defaults];
+    for (final t in teachers) {
+      if (!all.any((u) => u.emailOrPhone.toLowerCase() == t.emailOrPhone.toLowerCase())) {
+        all.add(t);
+      }
+    }
+    for (final s in students) {
+      if (!all.any((u) => u.emailOrPhone.toLowerCase() == s.emailOrPhone.toLowerCase())) {
+        all.add(s);
+      }
+    }
+
+    if (mounted) {
+      setState(() {
+        _availableGoogleProfiles = all;
+        _isLoadingProfiles = false;
+      });
+    }
   }
 
   @override
   void dispose() {
-    _identifierController.dispose();
-    _passwordController.dispose();
-    _tabController.dispose();
+    _emailController.dispose();
     super.dispose();
   }
 
-  void _onLoginPressed() {
-    if (_formKey.currentState?.validate() ?? false) {
-      if (_tabController.index == 0) {
-        // Password login
-        context.read<AuthBloc>().add(
-              LoginSubmitted(
-                identifier: _identifierController.text.trim(),
-                password: _passwordController.text,
+  void _signInWithGoogle(String email, {String? displayName}) {
+    context.read<AuthBloc>().add(
+          GoogleSignInSubmitted(
+            email: email.trim(),
+            displayName: displayName,
+          ),
+        );
+  }
+
+  void _showGoogleAccountPicker() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) {
+        return Container(
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+          ),
+          padding: EdgeInsets.only(
+            left: 24,
+            right: 24,
+            top: 24,
+            bottom: MediaQuery.of(context).viewInsets.bottom + 24,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    children: [
+                      _buildGoogleLogo(size: 24),
+                      const SizedBox(width: 12),
+                      const Text(
+                        'Choose a Google Account',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w700,
+                          color: Color(0xFF0F172A),
+                        ),
+                      ),
+                    ],
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.close, size: 20),
+                    onPressed: () => Navigator.pop(context),
+                  ),
+                ],
               ),
-            );
-      } else {
-        // OTP login request
-        context.read<AuthBloc>().add(
-              OtpRequested(identifier: _identifierController.text.trim()),
-            );
-      }
+              const SizedBox(height: 6),
+              const Text(
+                'Select an enrolled institutional Google Account to continue to EduGovernance ERP',
+                style: TextStyle(fontSize: 13, color: Color(0xFF64748B)),
+              ),
+              const SizedBox(height: 20),
+
+              // List of recognized school accounts
+              if (_isLoadingProfiles)
+                const Center(child: CircularProgressIndicator())
+              else
+                ConstrainedBox(
+                  constraints: const BoxConstraints(maxHeight: 280),
+                  child: ListView.separated(
+                    shrinkWrap: true,
+                    itemCount: _availableGoogleProfiles.length,
+                    separatorBuilder: (_, __) => const Divider(height: 1, color: Color(0xFFF1F5F9)),
+                    itemBuilder: (context, index) {
+                      final profile = _availableGoogleProfiles[index];
+                      return ListTile(
+                        contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        leading: CircleAvatar(
+                          backgroundColor: _getRoleColor(profile.role).withOpacity(0.15),
+                          child: Text(
+                            profile.name.isNotEmpty ? profile.name[0].toUpperCase() : 'G',
+                            style: TextStyle(
+                              color: _getRoleColor(profile.role),
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ),
+                        title: Row(
+                          children: [
+                            Text(
+                              profile.name,
+                              style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+                            ),
+                            const SizedBox(width: 8),
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                              decoration: BoxDecoration(
+                                color: _getRoleColor(profile.role).withOpacity(0.1),
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                              child: Text(
+                                profile.role.displayName,
+                                style: TextStyle(
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.w700,
+                                  color: _getRoleColor(profile.role),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        subtitle: Text(
+                          profile.emailOrPhone,
+                          style: const TextStyle(fontSize: 12, color: Color(0xFF64748B)),
+                        ),
+                        trailing: const Icon(Icons.chevron_right, size: 18, color: Color(0xFFCBD5E1)),
+                        onTap: () {
+                          Navigator.pop(context);
+                          _signInWithGoogle(profile.emailOrPhone, displayName: profile.name);
+                        },
+                      );
+                    },
+                  ),
+                ),
+
+              const SizedBox(height: 16),
+              const Divider(),
+              const SizedBox(height: 12),
+
+              // Use another account button
+              OutlinedButton.icon(
+                onPressed: () {
+                  Navigator.pop(context);
+                  _showCustomEmailDialog();
+                },
+                icon: const Icon(Icons.person_add_alt_1, size: 18),
+                label: const Text('Use another Google Account'),
+                style: OutlinedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  foregroundColor: const Color(0xFF0F172A),
+                  side: const BorderSide(color: Color(0xFFCBD5E1)),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  void _showCustomEmailDialog() {
+    _emailController.clear();
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          title: Row(
+            children: [
+              _buildGoogleLogo(size: 22),
+              const SizedBox(width: 10),
+              const Text('Google Sign-In', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
+            ],
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'Enter your registered Google Email account (@gmail.com or institutional domain):',
+                style: TextStyle(fontSize: 13, color: Color(0xFF64748B)),
+              ),
+              const SizedBox(height: 16),
+              TextField(
+                controller: _emailController,
+                keyboardType: TextInputType.emailAddress,
+                autofocus: true,
+                decoration: InputDecoration(
+                  labelText: 'Google Email',
+                  hintText: 'e.g. name@gmail.com',
+                  prefixIcon: const Icon(Icons.email_outlined),
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                final email = _emailController.text.trim();
+                if (email.isNotEmpty) {
+                  Navigator.pop(context);
+                  _signInWithGoogle(email);
+                }
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF0F172A),
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+              ),
+              child: const Text('Continue'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Color _getRoleColor(UserRole role) {
+    switch (role) {
+      case UserRole.admin:
+        return const Color(0xFFD97706);
+      case UserRole.teacher:
+        return const Color(0xFF059669);
+      case UserRole.student:
+        return const Color(0xFF0284C7);
+      case UserRole.parent:
+        return const Color(0xFF4F46E5);
     }
   }
 
-  void _fillDemoCredentials(String identifier, String password) {
-    _identifierController.text = identifier;
-    _passwordController.text = password;
+  Widget _buildGoogleLogo({double size = 20}) {
+    return Container(
+      width: size,
+      height: size,
+      decoration: const BoxDecoration(shape: BoxShape.circle),
+      child: Center(
+        child: Text(
+          'G',
+          style: TextStyle(
+            fontSize: size * 0.9,
+            fontWeight: FontWeight.w900,
+            fontFamily: 'Roboto',
+            color: const Color(0xFF4285F4),
+          ),
+        ),
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return BlocListener<AuthBloc, AuthState>(
       listener: (context, state) {
-        if (state is OtpSentState) {
-          context.push('${RoutePaths.otp}?identifier=${Uri.encodeComponent(state.identifier)}');
-        } else if (state is AuthError) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(state.message),
-              backgroundColor: const Color(0xFFDC2626),
-              behavior: SnackBarBehavior.floating,
+        if (state is AuthError) {
+          showDialog(
+            context: context,
+            builder: (ctx) => AlertDialog(
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+              icon: const Icon(Icons.gpp_maybe, size: 42, color: Color(0xFFDC2626)),
+              title: const Text(
+                'Authorization Required',
+                style: TextStyle(fontWeight: FontWeight.w700, fontSize: 18),
+              ),
+              content: Text(
+                state.message,
+                style: const TextStyle(fontSize: 14, color: Color(0xFF334155), height: 1.4),
+              ),
+              actions: [
+                ElevatedButton(
+                  onPressed: () => Navigator.pop(ctx),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF0F172A),
+                    foregroundColor: Colors.white,
+                  ),
+                  child: const Text('Understood'),
+                ),
+              ],
             ),
           );
         }
       },
       child: Scaffold(
-        backgroundColor: const Color(0xFFF1F5F9),
+        backgroundColor: const Color(0xFFF8FAFC),
         body: Center(
           child: SingleChildScrollView(
             padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
             child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 480),
+              constraints: const BoxConstraints(maxWidth: 460),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  // Header branding
+                  // Branding Icon
                   Center(
                     child: Container(
-                      padding: const EdgeInsets.all(16),
+                      padding: const EdgeInsets.all(18),
                       decoration: BoxDecoration(
-                        color: const Color(0xFF0F172A),
-                        borderRadius: BorderRadius.circular(20),
+                        gradient: const LinearGradient(
+                          colors: [Color(0xFF0F172A), Color(0xFF1E293B)],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
+                        borderRadius: BorderRadius.circular(24),
                         boxShadow: [
                           BoxShadow(
                             color: Colors.black.withOpacity(0.12),
-                            blurRadius: 16,
-                            offset: const Offset(0, 6),
+                            blurRadius: 20,
+                            offset: const Offset(0, 8),
                           ),
                         ],
                       ),
                       child: const Icon(
                         Icons.account_balance,
-                        size: 42,
+                        size: 46,
                         color: Color(0xFFF59E0B),
                       ),
                     ),
                   ),
                   const SizedBox(height: 20),
+
                   const Text(
                     'EduGovernance ERP',
                     textAlign: TextAlign.center,
                     style: TextStyle(
-                      fontSize: 26,
+                      fontSize: 28,
                       fontWeight: FontWeight.w800,
                       color: Color(0xFF0F172A),
                       letterSpacing: -0.5,
@@ -125,203 +385,185 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                   ),
                   const SizedBox(height: 6),
                   const Text(
-                    'Unified Authentication Gateway & Role Portal',
+                    'Unified Enterprise School Governance & Identity Gateway',
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: 14,
                       color: Color(0xFF64748B),
+                      height: 1.3,
                     ),
                   ),
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 28),
 
-                  // Session expiration banner if applicable
-                  BlocBuilder<AuthBloc, AuthState>(
-                    builder: (context, state) {
-                      final showTimeout = (state is Unauthenticated && state.isSessionTimeout) ||
-                          widget.sessionMessage != null;
-                      if (!showTimeout) return const SizedBox.shrink();
-
-                      return Container(
-                        margin: const EdgeInsets.only(bottom: 20),
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFFEF2F2),
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: const Color(0xFFFECACA)),
-                        ),
-                        child: Row(
-                          children: [
-                            const Icon(Icons.lock_clock, color: Color(0xFFDC2626), size: 20),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: Text(
-                                widget.sessionMessage ??
-                                    (state is Unauthenticated
-                                        ? (state.message ?? 'Session expired.')
-                                        : 'Session timed out.'),
-                                style: const TextStyle(
-                                  fontSize: 13,
-                                  color: Color(0xFF991B1B),
-                                  fontWeight: FontWeight.w500,
-                                ),
+                  // Session message banner if applicable
+                  if (widget.sessionMessage != null) ...[
+                    Container(
+                      margin: const EdgeInsets.only(bottom: 20),
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFFEF2F2),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: const Color(0xFFFECACA)),
+                      ),
+                      child: Row(
+                        children: [
+                          const Icon(Icons.lock_clock, color: Color(0xFFDC2626), size: 20),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Text(
+                              widget.sessionMessage!,
+                              style: const TextStyle(
+                                fontSize: 13,
+                                color: Color(0xFF991B1B),
+                                fontWeight: FontWeight.w500,
                               ),
                             ),
-                          ],
-                        ),
-                      );
-                    },
-                  ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
 
-                  // Main Login Form Card
+                  // Main Card: Google Sign-In Only
                   Card(
+                    elevation: 3,
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20),
+                      borderRadius: BorderRadius.circular(24),
                     ),
                     child: Padding(
                       padding: const EdgeInsets.all(28.0),
-                      child: Form(
-                        key: _formKey,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            // Tab Selector: Password vs OTP
-                            Container(
-                              height: 46,
-                              decoration: BoxDecoration(
-                                color: const Color(0xFFF1F5F9),
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: TabBar(
-                                controller: _tabController,
-                                indicator: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(10),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.black.withOpacity(0.06),
-                                      blurRadius: 4,
-                                    ),
-                                  ],
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          Row(
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.all(8),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFFEEF2FF),
+                                  borderRadius: BorderRadius.circular(8),
                                 ),
-                                labelColor: const Color(0xFF0F172A),
-                                unselectedLabelColor: const Color(0xFF64748B),
-                                labelStyle: const TextStyle(
-                                  fontWeight: FontWeight.w600,
-                                  fontSize: 14,
-                                ),
-                                tabs: const [
-                                  Tab(text: 'Password'),
-                                  Tab(text: 'One-Time OTP'),
-                                ],
-                                onTap: (_) => setState(() {}),
+                                child: const Icon(Icons.security, size: 20, color: Color(0xFF4F46E5)),
                               ),
-                            ),
-                            const SizedBox(height: 24),
-
-                            // Mobile / Email input
-                            TextFormField(
-                              controller: _identifierController,
-                              decoration: const InputDecoration(
-                                labelText: 'Mobile Number or Email',
-                                hintText: 'e.g. 9876543210 or admin@school.org',
-                                prefixIcon: Icon(Icons.person_outline),
-                              ),
-                              validator: (val) {
-                                if (val == null || val.trim().isEmpty) {
-                                  return 'Please enter your registered mobile or email';
-                                }
-                                return null;
-                              },
-                            ),
-                            const SizedBox(height: 16),
-
-                            // Password input (if on Password Tab)
-                            if (_tabController.index == 0) ...[
-                              TextFormField(
-                                controller: _passwordController,
-                                obscureText: _obscurePassword,
-                                decoration: InputDecoration(
-                                  labelText: 'Password',
-                                  prefixIcon: const Icon(Icons.lock_outline),
-                                  suffixIcon: IconButton(
-                                    icon: Icon(
-                                      _obscurePassword
-                                          ? Icons.visibility_off
-                                          : Icons.visibility,
-                                    ),
-                                    onPressed: () {
-                                      setState(() {
-                                        _obscurePassword = !_obscurePassword;
-                                      });
-                                    },
+                              const SizedBox(width: 12),
+                              const Expanded(
+                                child: Text(
+                                  'Google Single Sign-On',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w700,
+                                    color: Color(0xFF0F172A),
                                   ),
                                 ),
-                                validator: (val) {
-                                  if (_tabController.index == 0 &&
-                                      (val == null || val.isEmpty)) {
-                                    return 'Please enter your password';
-                                  }
-                                  return null;
-                                },
                               ),
-                              const SizedBox(height: 20),
                             ],
+                          ),
+                          const SizedBox(height: 12),
+                          const Text(
+                            'Sign in with your verified Google Account. Access permissions and portals are determined by your registered institutional role.',
+                            style: TextStyle(fontSize: 13, color: Color(0xFF64748B), height: 1.4),
+                          ),
+                          const SizedBox(height: 24),
 
-                            // Submit Button
-                            BlocBuilder<AuthBloc, AuthState>(
-                              builder: (context, state) {
-                                final isLoading = state is AuthLoading;
+                          // Google Sign-In Primary Action Button
+                          BlocBuilder<AuthBloc, AuthState>(
+                            builder: (context, state) {
+                              final isLoading = state is AuthLoading;
 
-                                return ElevatedButton(
-                                  onPressed: isLoading ? null : _onLoginPressed,
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: const Color(0xFF0F172A),
-                                    foregroundColor: Colors.white,
-                                    padding: const EdgeInsets.symmetric(vertical: 16),
+                              return OutlinedButton(
+                                onPressed: isLoading ? null : _showGoogleAccountPicker,
+                                style: OutlinedButton.styleFrom(
+                                  backgroundColor: Colors.white,
+                                  foregroundColor: const Color(0xFF0F172A),
+                                  padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+                                  side: const BorderSide(color: Color(0xFFCBD5E1), width: 1.5),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(14),
                                   ),
-                                  child: isLoading
-                                      ? const SizedBox(
-                                          height: 20,
-                                          width: 20,
-                                          child: CircularProgressIndicator(
-                                            strokeWidth: 2,
-                                            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                  elevation: 1,
+                                ),
+                                child: isLoading
+                                    ? const SizedBox(
+                                        height: 22,
+                                        width: 22,
+                                        child: CircularProgressIndicator(strokeWidth: 2.5),
+                                      )
+                                    : Row(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        children: [
+                                          _buildGoogleLogo(size: 22),
+                                          const SizedBox(width: 14),
+                                          const Text(
+                                            'Sign in with Google',
+                                            style: TextStyle(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.w700,
+                                              letterSpacing: -0.2,
+                                              color: Color(0xFF1E293B),
+                                            ),
                                           ),
-                                        )
-                                      : Text(
-                                          _tabController.index == 0
-                                              ? 'Sign In to Workspace'
-                                              : 'Send Verification OTP',
-                                          style: const TextStyle(fontSize: 16),
-                                        ),
-                                );
-                              },
+                                        ],
+                                      ),
+                              );
+                            },
+                          ),
+
+                          const SizedBox(height: 20),
+
+                          // Role Governance Policy Note
+                          Container(
+                            padding: const EdgeInsets.all(14),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFF8FAFC),
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(color: const Color(0xFFE2E8F0)),
                             ),
-                          ],
-                        ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: const [
+                                Text(
+                                  'RBAC ACCESS RULES',
+                                  style: TextStyle(
+                                    fontSize: 11,
+                                    letterSpacing: 0.8,
+                                    fontWeight: FontWeight.w800,
+                                    color: Color(0xFF475569),
+                                  ),
+                                ),
+                                SizedBox(height: 6),
+                                Text(
+                                  '• Admin creates & authorizes Teacher IDs.\n'
+                                  '• Teachers enroll & assign Student IDs.\n'
+                                  '• Only enrolled Google Accounts can log in.',
+                                  style: TextStyle(fontSize: 12, color: Color(0xFF64748B), height: 1.4),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ),
 
                   const SizedBox(height: 24),
 
-                  // Quick Demo Role Switcher
+                  // Quick One-Tap Switcher for instant demonstration
                   Container(
-                    padding: const EdgeInsets.all(16),
+                    padding: const EdgeInsets.all(18),
                     decoration: BoxDecoration(
                       color: Colors.white,
-                      borderRadius: BorderRadius.circular(16),
+                      borderRadius: BorderRadius.circular(18),
                       border: Border.all(color: const Color(0xFFE2E8F0)),
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const Text(
-                          'QUICK DEMO PRESETS',
+                          'ONE-TAP DEMO GOOGLE ACCOUNTS',
                           style: TextStyle(
                             fontSize: 11,
                             letterSpacing: 1.0,
-                            fontWeight: FontWeight.w700,
+                            fontWeight: FontWeight.w800,
                             color: Color(0xFF64748B),
                           ),
                         ),
@@ -330,20 +572,29 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                           spacing: 8,
                           runSpacing: 8,
                           children: [
-                            _buildRoleChip(
-                              label: 'School Manager (Admin)',
+                            _buildQuickChip(
+                              name: 'Dr. Vance',
+                              roleText: 'Admin',
+                              email: 'admin.school@gmail.com',
                               color: const Color(0xFF0F172A),
-                              onTap: () => _fillDemoCredentials('admin@school.org', 'admin123'),
                             ),
-                            _buildRoleChip(
-                              label: 'Staff / Teacher',
+                            _buildQuickChip(
+                              name: 'Sarah Jenkins',
+                              roleText: 'Teacher',
+                              email: 'teacher.sarah@gmail.com',
                               color: const Color(0xFF065F46),
-                              onTap: () => _fillDemoCredentials('teacher@school.org', 'teach123'),
                             ),
-                            _buildRoleChip(
-                              label: 'Parent / Guardian',
+                            _buildQuickChip(
+                              name: 'Alex Rivera',
+                              roleText: 'Student',
+                              email: 'student.alex@gmail.com',
+                              color: const Color(0xFF0284C7),
+                            ),
+                            _buildQuickChip(
+                              name: 'Scott Family',
+                              roleText: 'Parent',
+                              email: 'parent.scott@gmail.com',
                               color: const Color(0xFF312E81),
-                              onTap: () => _fillDemoCredentials('parent@school.org', 'parent123'),
                             ),
                           ],
                         ),
@@ -359,28 +610,36 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
     );
   }
 
-  Widget _buildRoleChip({
-    required String label,
+  Widget _buildQuickChip({
+    required String name,
+    required String roleText,
+    required String email,
     required Color color,
-    required VoidCallback onTap,
   }) {
     return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(8),
+      onTap: () => _signInWithGoogle(email, displayName: name),
+      borderRadius: BorderRadius.circular(10),
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
         decoration: BoxDecoration(
-          color: color.withOpacity(0.08),
-          borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: color.withOpacity(0.2)),
+          color: color.withOpacity(0.06),
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(color: color.withOpacity(0.25)),
         ),
-        child: Text(
-          label,
-          style: TextStyle(
-            fontSize: 12,
-            fontWeight: FontWeight.w600,
-            color: color,
-          ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            _buildGoogleLogo(size: 14),
+            const SizedBox(width: 8),
+            Text(
+              '$name ($roleText)',
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+                color: color,
+              ),
+            ),
+          ],
         ),
       ),
     );
