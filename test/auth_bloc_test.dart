@@ -53,16 +53,15 @@ class FakeAuthRepository implements AuthRepository {
 
   @override
   Future<User> loginWithGoogle({
-    required String googleEmail,
-    required String displayName,
-    String? photoUrl,
+    required String email,
+    String? displayName,
   }) async {
     if (shouldFail) throw Exception('Google auth error');
     return mockUser ??
         User(
           id: 'USR_GOOGLE',
-          name: displayName,
-          emailOrPhone: googleEmail,
+          name: displayName ?? 'Google User',
+          emailOrPhone: email,
           role: UserRole.admin,
         );
   }
@@ -178,7 +177,7 @@ void main() {
         sessionManager: sessionManager,
       ),
       act: (bloc) => bloc.add(const GoogleSignInSubmitted(
-        googleEmail: 'admin@school.org',
+        email: 'admin@school.org',
         displayName: 'Admin User',
       )),
       expect: () => [
