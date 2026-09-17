@@ -5,20 +5,23 @@ import '../storage/secure_storage_service.dart';
 /// Central synchronized service managing assignments published by teachers
 /// and accessible in real-time by Students, Parents, and Admins.
 class AssignmentSyncService {
-  static final AssignmentSyncService _instance = AssignmentSyncService._internal();
+  static AssignmentSyncService? _instance;
+
   factory AssignmentSyncService({SecureStorageService? storageService}) {
-    if (storageService != null) {
-      _instance._storageService = storageService;
+    if (_instance == null) {
+      _instance = AssignmentSyncService._internal(storageService);
+    } else if (storageService != null) {
+      _instance!._storageService = storageService;
     }
-    return _instance;
+    return _instance!;
   }
 
-  AssignmentSyncService._internal() {
-    _storageService = SecureStorageService();
+  AssignmentSyncService._internal(SecureStorageService? storageService) {
+    _storageService = storageService;
     _loadFromStorage();
   }
 
-  late SecureStorageService _storageService;
+  SecureStorageService? _storageService;
   static const String _storageKey = 'sync_assignments_store_v1';
 
   final ValueNotifier<List<Map<String, dynamic>>> assignmentsNotifier =
@@ -84,28 +87,29 @@ class AssignmentSyncService {
   ];
 
   Future<void> _loadFromStorage() async {
-    try {
-      final raw = await _storageService.getCustomData(_storageKey);
-      if (raw != null && raw.isNotEmpty) {
-        final List<dynamic> decoded = jsonDecode(raw);
-        final list = decoded.map((e) => Map<String, dynamic>.from(e as Map)).toList();
-        assignmentsNotifier.value = list;
-        return;
-      }
-    } catch (_) {}
+    if (_storageService != null) {
+      try {
+        final raw = await _storageService!.getCustomData(_storageKey);
+        if (raw != null && raw.isNotEmpty) {
+          final List<dynamic> decoded = jsonDecode(raw);
+          final list = decoded.map((e) => Map<String, dynamic>.from(e as Map)).toList();
+          assignmentsNotifier.value = list;
+          return;
+        }
+      } catch (_) {}
+    }
 
-    // Fallback to default assignments and persist
+    // Default seed assignments
     assignmentsNotifier.value = List.from(_defaultAssignments);
-    try {
-      await _persist();
-    } catch (_) {}
   }
 
   Future<void> _persist() async {
-    try {
-      final raw = jsonEncode(assignmentsNotifier.value);
-      await _storageService.saveCustomData(_storageKey, raw);
-    } catch (_) {}
+    if (_storageService != null) {
+      try {
+        final raw = jsonEncode(assignmentsNotifier.value);
+        await _storageService!.saveCustomData(_storageKey, raw);
+      } catch (_) {}
+    }
   }
 
   /// Adds a new assignment published by a teacher with UNLIMITED attached PDFs
@@ -152,5 +156,10 @@ class AssignmentSyncService {
     }).toList();
     assignmentsNotifier.value = updated;
     await _persist();
+  }
+
+  @visibleForTesting
+  static void resetForTesting() {
+    _instance = null;
   }
 }
