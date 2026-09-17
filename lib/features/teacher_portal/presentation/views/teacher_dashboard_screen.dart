@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../../core/services/assignment_sync_service.dart';
 import '../../../../core/storage/secure_storage_service.dart';
 import '../../../auth/data/datasources/user_registry_service.dart';
 import '../../../auth/data/models/user_model.dart';
@@ -15,6 +16,7 @@ class TeacherDashboardScreen extends StatefulWidget {
 
 class _TeacherDashboardScreenState extends State<TeacherDashboardScreen> {
   late final UserRegistryService _registryService;
+  late final AssignmentSyncService _assignmentSyncService;
   List<UserModel> _students = [];
   bool _isLoadingStudents = true;
   String _selectedClass = 'Class 10-A';
@@ -176,7 +178,25 @@ class _TeacherDashboardScreenState extends State<TeacherDashboardScreen> {
   void initState() {
     super.initState();
     _registryService = UserRegistryService(storageService: SecureStorageService());
+    _assignmentSyncService = AssignmentSyncService();
+    _syncAssignments();
+    _assignmentSyncService.assignmentsNotifier.addListener(_syncAssignments);
     _loadStudents();
+  }
+
+  void _syncAssignments() {
+    if (mounted) {
+      setState(() {
+        _assignments.clear();
+        _assignments.addAll(_assignmentSyncService.currentAssignments);
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    _assignmentSyncService.assignmentsNotifier.removeListener(_syncAssignments);
+    super.dispose();
   }
 
   Future<void> _loadStudents() async {
@@ -588,20 +608,123 @@ class _TeacherDashboardScreenState extends State<TeacherDashboardScreen> {
   }
 
   // ===========================================================================
-  // FEATURE 3: PUBLISH ASSIGNMENT
+  // FEATURE 3: PUBLISH ASSIGNMENT (WITH UNLIMITED CUSTOM PDF UPLOADS)
   // ===========================================================================
   void _showPublishAssignmentDialog() {
     final titleCtrl = TextEditingController(text: 'Coordinate Geometry & Straight Lines Exercise 5');
     final descCtrl = TextEditingController(text: 'Complete questions 1 to 10 from NCERT Textbook with graph plots.');
     final marksCtrl = TextEditingController(text: '40');
-    String dueDate = '24 Sep 2026';
-    String attachment = 'Coordinate_Geometry_Ex5.pdf';
+    String dueDate = '26 Sep 2026';
+
+    // Unlimited dynamic attachments list
+    final List<Map<String, String>> attachedFiles = [
+      {'name': 'Coordinate_Geometry_Ex5.pdf', 'size': '2.1 MB'},
+      {'name': 'Formula_Sheet_Standard.pdf', 'size': '640 KB'},
+    ];
 
     showDialog(
       context: context,
       builder: (ctx) {
         return StatefulBuilder(
           builder: (ctx, setDialogState) {
+            void showAddPdfModal() {
+              final pdfNameCtrl = TextEditingController(text: 'Worksheet_Problem_Set_${attachedFiles.length + 1}.pdf');
+              final pdfSizeCtrl = TextEditingController(text: '1.8 MB');
+
+              showDialog(
+                context: ctx,
+                builder: (addPdfCtx) {
+                  return AlertDialog(
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+                    title: Row(
+                      children: const [
+                        Icon(Icons.picture_as_pdf, color: Color(0xFFDC2626)),
+                        SizedBox(width: 8),
+                        Text('Add Custom PDF', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
+                      ],
+                    ),
+                    content: SingleChildScrollView(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            'Attach your own PDF material. There is no limit to the number of PDFs you can attach.',
+                            style: TextStyle(fontSize: 12, color: Color(0xFF64748B)),
+                          ),
+                          const SizedBox(height: 14),
+                          TextField(
+                            controller: pdfNameCtrl,
+                            decoration: const InputDecoration(
+                              labelText: 'PDF Document Name',
+                              hintText: 'e.g. Chapter_Notes.pdf',
+                              prefixIcon: Icon(Icons.description, size: 18),
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                          TextField(
+                            controller: pdfSizeCtrl,
+                            decoration: const InputDecoration(
+                              labelText: 'Estimated File Size',
+                              hintText: 'e.g. 2.4 MB',
+                              prefixIcon: Icon(Icons.storage, size: 18),
+                            ),
+                          ),
+                          const SizedBox(height: 14),
+                          const Text('Quick Template Suggestions:', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: Color(0xFF475569))),
+                          const SizedBox(height: 6),
+                          Wrap(
+                            spacing: 6,
+                            runSpacing: 6,
+                            children: [
+                              ActionChip(
+                                label: const Text('Question_Bank.pdf', style: TextStyle(fontSize: 11)),
+                                onPressed: () => pdfNameCtrl.text = 'Question_Bank.pdf',
+                              ),
+                              ActionChip(
+                                label: const Text('NCERT_Solutions.pdf', style: TextStyle(fontSize: 11)),
+                                onPressed: () => pdfNameCtrl.text = 'NCERT_Solutions.pdf',
+                              ),
+                              ActionChip(
+                                label: const Text('Lab_Manual_Guide.pdf', style: TextStyle(fontSize: 11)),
+                                onPressed: () => pdfNameCtrl.text = 'Lab_Manual_Guide.pdf',
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Navigator.pop(addPdfCtx),
+                        child: const Text('Cancel'),
+                      ),
+                      ElevatedButton.icon(
+                        onPressed: () {
+                          final name = pdfNameCtrl.text.trim();
+                          if (name.isNotEmpty) {
+                            setDialogState(() {
+                              attachedFiles.add({
+                                'name': name.endsWith('.pdf') ? name : '$name.pdf',
+                                'size': pdfSizeCtrl.text.trim().isEmpty ? '1.5 MB' : pdfSizeCtrl.text.trim(),
+                              });
+                            });
+                            Navigator.pop(addPdfCtx);
+                          }
+                        },
+                        icon: const Icon(Icons.add, size: 16),
+                        label: const Text('Add PDF'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFFDC2626),
+                          foregroundColor: Colors.white,
+                        ),
+                      ),
+                    ],
+                  );
+                },
+              );
+            }
+
             return AlertDialog(
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
               title: Row(
@@ -617,7 +740,7 @@ class _TeacherDashboardScreenState extends State<TeacherDashboardScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const Text(
-                      'Post structured homework to student vault with attached document.',
+                      'Post structured homework to student vault with unlimited PDF attachments.',
                       style: TextStyle(fontSize: 13, color: Color(0xFF64748B)),
                     ),
                     const SizedBox(height: 16),
@@ -645,7 +768,7 @@ class _TeacherDashboardScreenState extends State<TeacherDashboardScreen> {
                               prefixIcon: const Icon(Icons.calendar_today, size: 18),
                             ),
                             onTap: () {
-                              setDialogState(() => dueDate = '26 Sep 2026');
+                              setDialogState(() => dueDate = '28 Sep 2026');
                             },
                           ),
                         ),
@@ -657,18 +780,108 @@ class _TeacherDashboardScreenState extends State<TeacherDashboardScreen> {
                       decoration: const InputDecoration(labelText: 'Problem Instructions', prefixIcon: Icon(Icons.description)),
                       maxLines: 2,
                     ),
-                    const SizedBox(height: 12),
-                    DropdownButtonFormField<String>(
-                      value: attachment,
-                      decoration: const InputDecoration(labelText: 'Attached Document / PDF', prefixIcon: Icon(Icons.attach_file)),
-                      items: const [
-                        DropdownMenuItem(value: 'Coordinate_Geometry_Ex5.pdf', child: Text('Coordinate_Geometry_Ex5.pdf')),
-                        DropdownMenuItem(value: 'Formula_Sheet_Standard.pdf', child: Text('Formula_Sheet_Standard.pdf')),
-                        DropdownMenuItem(value: 'Practice_Questions_Advanced.pdf', child: Text('Practice_Questions_Advanced.pdf')),
+                    const SizedBox(height: 16),
+
+                    // Unlimited Attached PDFs Section Header
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Row(
+                          children: [
+                            const Icon(Icons.attach_file, size: 18, color: Color(0xFF0F172A)),
+                            const SizedBox(width: 6),
+                            const Text(
+                              'Attached PDFs',
+                              style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: Color(0xFF0F172A)),
+                            ),
+                            const SizedBox(width: 8),
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFFDCFCE7),
+                                borderRadius: BorderRadius.circular(6),
+                              ),
+                              child: Text(
+                                '${attachedFiles.length} attached • No Limit',
+                                style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w700, color: Color(0xFF16A34A)),
+                              ),
+                            ),
+                          ],
+                        ),
                       ],
-                      onChanged: (v) {
-                        if (v != null) setDialogState(() => attachment = v);
-                      },
+                    ),
+                    const SizedBox(height: 8),
+
+                    // List of all attached PDFs with delete buttons
+                    if (attachedFiles.isEmpty)
+                      Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFF8FAFC),
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(color: const Color(0xFFE2E8F0)),
+                        ),
+                        child: const Text('No PDFs attached yet. Click "+ Add PDF" below.', style: TextStyle(fontSize: 12, color: Color(0xFF94A3B8))),
+                      )
+                    else
+                      Column(
+                        children: attachedFiles.asMap().entries.map((entry) {
+                          final idx = entry.key;
+                          final f = entry.value;
+                          return Container(
+                            margin: const EdgeInsets.only(bottom: 6),
+                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFF1F5F9),
+                              borderRadius: BorderRadius.circular(10),
+                              border: Border.all(color: const Color(0xFFCBD5E1)),
+                            ),
+                            child: Row(
+                              children: [
+                                const Icon(Icons.picture_as_pdf, size: 18, color: Color(0xFFDC2626)),
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        f['name'] ?? 'Document.pdf',
+                                        style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Color(0xFF0F172A)),
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                      Text(
+                                        f['size'] ?? '1.5 MB',
+                                        style: const TextStyle(fontSize: 10, color: Color(0xFF64748B)),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                IconButton(
+                                  icon: const Icon(Icons.remove_circle_outline, size: 18, color: Color(0xFFEF4444)),
+                                  visualDensity: VisualDensity.compact,
+                                  onPressed: () {
+                                    setDialogState(() {
+                                      attachedFiles.removeAt(idx);
+                                    });
+                                  },
+                                ),
+                              ],
+                            ),
+                          );
+                        }).toList(),
+                      ),
+
+                    const SizedBox(height: 8),
+                    // Add PDF Button (Unlimited)
+                    OutlinedButton.icon(
+                      onPressed: showAddPdfModal,
+                      icon: const Icon(Icons.add, size: 16, color: Color(0xFF2563EB)),
+                      label: const Text('Add PDF Document (No Limit)'),
+                      style: OutlinedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
+                        side: const BorderSide(color: Color(0xFF93C5FD)),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                      ),
                     ),
                   ],
                 ),
@@ -676,26 +889,29 @@ class _TeacherDashboardScreenState extends State<TeacherDashboardScreen> {
               actions: [
                 TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
                 ElevatedButton(
-                  onPressed: () {
-                    setState(() {
-                      _assignments.insert(0, {
-                        'id': 'ASGN_${DateTime.now().millisecondsSinceEpoch}',
-                        'title': titleCtrl.text.trim(),
-                        'subject': 'Mathematics',
-                        'class': _selectedClass,
-                        'dueDate': dueDate,
-                        'maxMarks': int.tryParse(marksCtrl.text.trim()) ?? 40,
-                        'instructions': descCtrl.text.trim(),
-                        'attachment': attachment,
-                        'submissionsCount': 0,
-                        'totalCount': _students.length,
-                      });
-                    });
+                  onPressed: () async {
+                    final title = titleCtrl.text.trim();
+                    if (title.isEmpty) return;
+
+                    // Publish to central sync service so Student & Parent portals update immediately
+                    await _assignmentSyncService.publishAssignment(
+                      title: title,
+                      subject: 'Mathematics',
+                      targetClass: _selectedClass,
+                      dueDate: dueDate,
+                      maxMarks: int.tryParse(marksCtrl.text.trim()) ?? 40,
+                      instructions: descCtrl.text.trim(),
+                      attachments: attachedFiles,
+                      totalCount: _students.length,
+                    );
+
                     Navigator.pop(ctx);
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
-                        content: Text('Assignment "${titleCtrl.text.trim()}" published to $_selectedClass Vault!'),
-                        backgroundColor: const Color(0xFF2563EB),
+                        content: Text(
+                          'Assignment "$title" published with ${attachedFiles.length} PDF(s) to $_selectedClass! Synced to Student & Parent Portals.',
+                        ),
+                        backgroundColor: const Color(0xFF16A34A),
                       ),
                     );
                   },
