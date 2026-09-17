@@ -96,7 +96,9 @@ class AssignmentSyncService {
 
     // Fallback to default assignments and persist
     assignmentsNotifier.value = List.from(_defaultAssignments);
-    await _persist();
+    try {
+      await _persist();
+    } catch (_) {}
   }
 
   Future<void> _persist() async {

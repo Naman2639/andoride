@@ -1,14 +1,32 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:school_erp/core/services/assignment_sync_service.dart';
+import 'package:school_erp/core/storage/secure_storage_service.dart';
+
+class FakeSecureStorageService implements SecureStorageService {
+  final Map<String, String> _data = {};
+
+  @override
+  Future<void> saveCustomData(String key, String value) async {
+    _data[key] = value;
+  }
+
+  @override
+  Future<String?> getCustomData(String key) async => _data[key];
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   group('AssignmentSyncService Tests', () {
+    late FakeSecureStorageService fakeStorage;
     late AssignmentSyncService service;
 
     setUp(() {
-      service = AssignmentSyncService();
+      fakeStorage = FakeSecureStorageService();
+      service = AssignmentSyncService(storageService: fakeStorage);
     });
 
     test('should initialize with default assignments', () {
