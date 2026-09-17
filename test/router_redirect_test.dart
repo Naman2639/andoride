@@ -41,6 +41,7 @@ String? evaluateRedirect({
   final isAdminRoute = matchedLocation.startsWith('/admin');
   final isTeacherRoute = matchedLocation.startsWith('/teacher');
   final isParentRoute = matchedLocation.startsWith('/parent');
+  final isStudentRoute = matchedLocation.startsWith('/student');
 
   if (isAdminRoute && userRole != UserRole.admin) {
     return userRole.defaultRoute;
@@ -51,6 +52,10 @@ String? evaluateRedirect({
   }
 
   if (isParentRoute && userRole != UserRole.parent) {
+    return userRole.defaultRoute;
+  }
+
+  if (isStudentRoute && userRole != UserRole.student) {
     return userRole.defaultRoute;
   }
 
@@ -80,6 +85,13 @@ void main() {
       role: UserRole.parent,
     );
 
+    const studentUser = User(
+      id: 'S1',
+      name: 'Student',
+      emailOrPhone: 'student@school.org',
+      role: UserRole.student,
+    );
+
     test('Unauthenticated user requesting /admin is redirected to /login', () {
       final redirect = evaluateRedirect(
         authState: const Unauthenticated(),
@@ -92,6 +104,14 @@ void main() {
       final redirect = evaluateRedirect(
         authState: const Unauthenticated(),
         matchedLocation: '/teacher',
+      );
+      expect(redirect, equals(RoutePaths.login));
+    });
+
+    test('Unauthenticated user requesting /student is redirected to /login', () {
+      final redirect = evaluateRedirect(
+        authState: const Unauthenticated(),
+        matchedLocation: '/student',
       );
       expect(redirect, equals(RoutePaths.login));
     });
@@ -136,6 +156,14 @@ void main() {
       expect(redirect, equals(RoutePaths.parentDashboard));
     });
 
+    test('Authenticated STUDENT visiting /login is redirected to /student', () {
+      final redirect = evaluateRedirect(
+        authState: const Authenticated(user: studentUser),
+        matchedLocation: RoutePaths.login,
+      );
+      expect(redirect, equals(RoutePaths.studentDashboard));
+    });
+
     test('Anti-Privilege Escalation: PARENT trying to access /admin is bounced to /parent', () {
       final redirect = evaluateRedirect(
         authState: const Authenticated(user: parentUser),
@@ -150,6 +178,14 @@ void main() {
         matchedLocation: '/admin',
       );
       expect(redirect, equals(RoutePaths.teacherDashboard));
+    });
+
+    test('Anti-Privilege Escalation: STUDENT trying to access /admin is bounced to /student', () {
+      final redirect = evaluateRedirect(
+        authState: const Authenticated(user: studentUser),
+        matchedLocation: '/admin',
+      );
+      expect(redirect, equals(RoutePaths.studentDashboard));
     });
 
     test('Anti-Privilege Escalation: ADMIN trying to access /parent is rebounded to /admin', () {
@@ -181,6 +217,14 @@ void main() {
         evaluateRedirect(
           authState: const Authenticated(user: parentUser),
           matchedLocation: '/parent',
+        ),
+        isNull,
+      );
+
+      expect(
+        evaluateRedirect(
+          authState: const Authenticated(user: studentUser),
+          matchedLocation: '/student',
         ),
         isNull,
       );

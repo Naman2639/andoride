@@ -52,6 +52,22 @@ class FakeAuthRepository implements AuthRepository {
   }
 
   @override
+  Future<User> loginWithGoogle({
+    required String googleEmail,
+    required String displayName,
+    String? photoUrl,
+  }) async {
+    if (shouldFail) throw Exception('Google auth error');
+    return mockUser ??
+        User(
+          id: 'USR_GOOGLE',
+          name: displayName,
+          emailOrPhone: googleEmail,
+          role: UserRole.admin,
+        );
+  }
+
+  @override
   Future<bool> isSessionValid(UserRole role) async => true;
 
   @override
@@ -148,6 +164,25 @@ void main() {
       )),
       expect: () => [
         const AuthLoading(message: 'Authenticating credentials...'),
+        const Authenticated(user: testAdminUser),
+      ],
+    );
+
+    blocTest<AuthBloc, AuthState>(
+      'emits [AuthLoading, Authenticated] on GoogleSignInSubmitted success',
+      setUp: () {
+        authRepository.mockUser = testAdminUser;
+      },
+      build: () => AuthBloc(
+        authRepository: authRepository,
+        sessionManager: sessionManager,
+      ),
+      act: (bloc) => bloc.add(const GoogleSignInSubmitted(
+        googleEmail: 'admin@school.org',
+        displayName: 'Admin User',
+      )),
+      expect: () => [
+        const AuthLoading(message: 'Connecting to Google Accounts...'),
         const Authenticated(user: testAdminUser),
       ],
     );
