@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:andoride/core/services/assignment_sync_service.dart';
+import 'package:school_erp/core/services/assignment_sync_service.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
