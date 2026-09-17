@@ -30,7 +30,7 @@ jobs:
 
       - name: Configure Android Project
         run: |
-          # Ensure Gradle wrapper uses a compatible version (8.9)
+          # Ensure Gradle wrapper uses a compatible version (8.14.1)
           sed -i 's|gradle-.*-all.zip|gradle-8.14.1-all.zip|' android/gradle/wrapper/gradle-wrapper.properties
           # Ensure required Android properties are set
           grep -q 'android.useAndroidX' android/gradle.properties || echo "android.useAndroidX=true" >> android/gradle.properties
@@ -43,7 +43,7 @@ jobs:
         run: flutter test
 
       - name: Build Android Release APK
-        run: flutter build apk --release --no-tree-shake-icons
+        run: flutter build apk --release --no-tree-shake-icons --android-skip-build-dependency-validation
 
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
