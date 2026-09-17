@@ -88,6 +88,9 @@ class _LoginScreenState extends State<LoginScreen> {
         return StatefulBuilder(
           builder: (ctx, setModalState) {
             return Container(
+              constraints: BoxConstraints(
+                maxHeight: MediaQuery.of(ctx).size.height * 0.9,
+              ),
               decoration: const BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
@@ -98,136 +101,138 @@ class _LoginScreenState extends State<LoginScreen> {
                 top: 24,
                 bottom: MediaQuery.of(ctx).viewInsets.bottom + 24,
               ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Row(
-                        children: const [
-                          Icon(Icons.badge, color: Color(0xFF059669), size: 24),
-                          SizedBox(width: 10),
-                          Text(
-                            'Teacher Position & Subject',
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w700,
-                              color: Color(0xFF0F172A),
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Row(
+                          children: const [
+                            Icon(Icons.badge, color: Color(0xFF059669), size: 24),
+                            SizedBox(width: 10),
+                            Text(
+                              'Teacher Position & Subject',
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w700,
+                                color: Color(0xFF0F172A),
+                              ),
                             ),
-                          ),
-                        ],
-                      ),
-                      IconButton(
-                        icon: const Icon(Icons.close, size: 20),
-                        onPressed: () => Navigator.pop(ctx),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 6),
-                  Text(
-                    'Select your teaching role and active subject for Google account "$email":',
-                    style: const TextStyle(fontSize: 13, color: Color(0xFF64748B)),
-                  ),
-                  const SizedBox(height: 18),
-                  const Text(
-                    'FACULTY POSITION / DESIGNATION',
-                    style: TextStyle(
-                      fontSize: 11,
-                      fontWeight: FontWeight.w800,
-                      letterSpacing: 0.8,
-                      color: Color(0xFF475569),
+                          ],
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.close, size: 20),
+                          onPressed: () => Navigator.pop(ctx),
+                        ),
+                      ],
                     ),
-                  ),
-                  const SizedBox(height: 8),
-                  DropdownButtonFormField<String>(
-                    value: tempPosition,
-                    decoration: InputDecoration(
-                      prefixIcon: const Icon(Icons.school, color: Color(0xFF059669)),
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                    const SizedBox(height: 6),
+                    Text(
+                      'Select your teaching role and active subject for Google account "$email":',
+                      style: const TextStyle(fontSize: 13, color: Color(0xFF64748B)),
                     ),
-                    items: const [
-                      DropdownMenuItem(
-                        value: 'Class Teacher (Grade 10-A)',
-                        child: Text('Class Teacher (Grade 10-A)'),
+                    const SizedBox(height: 18),
+                    const Text(
+                      'FACULTY POSITION / DESIGNATION',
+                      style: TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w800,
+                        letterSpacing: 0.8,
+                        color: Color(0xFF475569),
                       ),
-                      DropdownMenuItem(
-                        value: 'Head of Department (HOD)',
-                        child: Text('Head of Department (HOD)'),
-                      ),
-                      DropdownMenuItem(
-                        value: 'Senior Secondary Faculty',
-                        child: Text('Senior Secondary Faculty'),
-                      ),
-                      DropdownMenuItem(
-                        value: 'Primary Wing Lead',
-                        child: Text('Primary Wing Lead'),
-                      ),
-                      DropdownMenuItem(
-                        value: 'Academic Coordinator',
-                        child: Text('Academic Coordinator'),
-                      ),
-                    ],
-                    onChanged: (val) {
-                      if (val != null) setModalState(() => tempPosition = val);
-                    },
-                  ),
-                  const SizedBox(height: 18),
-                  const Text(
-                    'TEACHING SUBJECT',
-                    style: TextStyle(
-                      fontSize: 11,
-                      fontWeight: FontWeight.w800,
-                      letterSpacing: 0.8,
-                      color: Color(0xFF475569),
                     ),
-                  ),
-                  const SizedBox(height: 8),
-                  DropdownButtonFormField<String>(
-                    value: tempSubject,
-                    decoration: InputDecoration(
-                      prefixIcon: const Icon(Icons.menu_book, color: Color(0xFF0284C7)),
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                    const SizedBox(height: 8),
+                    DropdownButtonFormField<String>(
+                      value: tempPosition,
+                      decoration: InputDecoration(
+                        prefixIcon: const Icon(Icons.school, color: Color(0xFF059669)),
+                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                        contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                      ),
+                      items: const [
+                        DropdownMenuItem(
+                          value: 'Class Teacher (Grade 10-A)',
+                          child: Text('Class Teacher (Grade 10-A)'),
+                        ),
+                        DropdownMenuItem(
+                          value: 'Head of Department (HOD)',
+                          child: Text('Head of Department (HOD)'),
+                        ),
+                        DropdownMenuItem(
+                          value: 'Senior Secondary Faculty',
+                          child: Text('Senior Secondary Faculty'),
+                        ),
+                        DropdownMenuItem(
+                          value: 'Primary Wing Lead',
+                          child: Text('Primary Wing Lead'),
+                        ),
+                        DropdownMenuItem(
+                          value: 'Academic Coordinator',
+                          child: Text('Academic Coordinator'),
+                        ),
+                      ],
+                      onChanged: (val) {
+                        if (val != null) setModalState(() => tempPosition = val);
+                      },
                     ),
-                    items: const [
-                      DropdownMenuItem(value: 'Mathematics', child: Text('Mathematics')),
-                      DropdownMenuItem(value: 'Physics & Science', child: Text('Physics & Science')),
-                      DropdownMenuItem(value: 'Chemistry & Biology', child: Text('Chemistry & Biology')),
-                      DropdownMenuItem(value: 'English Literature', child: Text('English Literature')),
-                      DropdownMenuItem(value: 'Computer Science & AI', child: Text('Computer Science & AI')),
-                      DropdownMenuItem(value: 'Social Studies & History', child: Text('Social Studies & History')),
-                    ],
-                    onChanged: (val) {
-                      if (val != null) setModalState(() => tempSubject = val);
-                    },
-                  ),
-                  const SizedBox(height: 24),
-                  ElevatedButton.icon(
-                    onPressed: () {
-                      setState(() {
-                        _selectedTeacherPosition = tempPosition;
-                        _selectedTeacherSubject = tempSubject;
-                      });
-                      Navigator.pop(ctx);
-                      _signInWithGoogle(
-                        email,
-                        displayName: name,
-                        designation: '$tempPosition • $tempSubject Faculty',
-                      );
-                    },
-                    icon: const Icon(Icons.login),
-                    label: Text('Continue as $tempSubject Teacher'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF065F46),
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 14),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    const SizedBox(height: 18),
+                    const Text(
+                      'TEACHING SUBJECT',
+                      style: TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w800,
+                        letterSpacing: 0.8,
+                        color: Color(0xFF475569),
+                      ),
                     ),
-                  ),
-                ],
+                    const SizedBox(height: 8),
+                    DropdownButtonFormField<String>(
+                      value: tempSubject,
+                      decoration: InputDecoration(
+                        prefixIcon: const Icon(Icons.menu_book, color: Color(0xFF0284C7)),
+                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                        contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                      ),
+                      items: const [
+                        DropdownMenuItem(value: 'Mathematics', child: Text('Mathematics')),
+                        DropdownMenuItem(value: 'Physics & Science', child: Text('Physics & Science')),
+                        DropdownMenuItem(value: 'Chemistry & Biology', child: Text('Chemistry & Biology')),
+                        DropdownMenuItem(value: 'English Literature', child: Text('English Literature')),
+                        DropdownMenuItem(value: 'Computer Science & AI', child: Text('Computer Science & AI')),
+                        DropdownMenuItem(value: 'Social Studies & History', child: Text('Social Studies & History')),
+                      ],
+                      onChanged: (val) {
+                        if (val != null) setModalState(() => tempSubject = val);
+                      },
+                    ),
+                    const SizedBox(height: 24),
+                    ElevatedButton.icon(
+                      onPressed: () {
+                        setState(() {
+                          _selectedTeacherPosition = tempPosition;
+                          _selectedTeacherSubject = tempSubject;
+                        });
+                        Navigator.pop(ctx);
+                        _signInWithGoogle(
+                          email,
+                          displayName: name,
+                          designation: '$tempPosition • $tempSubject Faculty',
+                        );
+                      },
+                      icon: const Icon(Icons.login),
+                      label: Text('Continue as $tempSubject Teacher'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF065F46),
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             );
           },
@@ -243,6 +248,9 @@ class _LoginScreenState extends State<LoginScreen> {
       backgroundColor: Colors.transparent,
       builder: (context) {
         return Container(
+          constraints: BoxConstraints(
+            maxHeight: MediaQuery.of(context).size.height * 0.9,
+          ),
           decoration: const BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
@@ -253,129 +261,133 @@ class _LoginScreenState extends State<LoginScreen> {
             top: 24,
             bottom: MediaQuery.of(context).viewInsets.bottom + 24,
           ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Row(
-                    children: [
-                      _buildGoogleLogo(size: 24),
-                      const SizedBox(width: 12),
-                      const Text(
-                        'Choose a Google Account',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w700,
-                          color: Color(0xFF0F172A),
-                        ),
-                      ),
-                    ],
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.close, size: 20),
-                    onPressed: () => Navigator.pop(context),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 6),
-              const Text(
-                'Select an enrolled institutional Google Account to continue to EduGovernance ERP',
-                style: TextStyle(fontSize: 13, color: Color(0xFF64748B)),
-              ),
-              const SizedBox(height: 20),
-
-              // List of recognized school accounts
-              if (_isLoadingProfiles)
-                const Center(child: CircularProgressIndicator())
-              else
-                ConstrainedBox(
-                  constraints: const BoxConstraints(maxHeight: 280),
-                  child: ListView.separated(
-                    shrinkWrap: true,
-                    itemCount: _availableGoogleProfiles.length,
-                    separatorBuilder: (_, __) => const Divider(height: 1, color: Color(0xFFF1F5F9)),
-                    itemBuilder: (context, index) {
-                      final profile = _availableGoogleProfiles[index];
-                      return ListTile(
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                        leading: CircleAvatar(
-                          backgroundColor: _getRoleColor(profile.role).withOpacity(0.15),
-                          child: Text(
-                            profile.name.isNotEmpty ? profile.name[0].toUpperCase() : 'G',
-                            style: TextStyle(
-                              color: _getRoleColor(profile.role),
-                              fontWeight: FontWeight.w700,
-                            ),
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      children: [
+                        _buildGoogleLogo(size: 24),
+                        const SizedBox(width: 12),
+                        const Text(
+                          'Choose a Google Account',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w700,
+                            color: Color(0xFF0F172A),
                           ),
                         ),
-                        title: Row(
-                          children: [
-                            Text(
-                              profile.name,
-                              style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
-                            ),
-                            const SizedBox(width: 8),
-                            Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                              decoration: BoxDecoration(
-                                color: _getRoleColor(profile.role).withOpacity(0.1),
-                                borderRadius: BorderRadius.circular(4),
+                      ],
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.close, size: 20),
+                      onPressed: () => Navigator.pop(context),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 6),
+                const Text(
+                  'Select an enrolled institutional Google Account to continue to EduGovernance ERP',
+                  style: TextStyle(fontSize: 13, color: Color(0xFF64748B)),
+                ),
+                const SizedBox(height: 20),
+
+                // List of recognized school accounts
+                if (_isLoadingProfiles)
+                  const Center(child: CircularProgressIndicator())
+                else
+                  ConstrainedBox(
+                    constraints: BoxConstraints(
+                      maxHeight: MediaQuery.of(context).size.height < 500 ? 160 : 280,
+                    ),
+                    child: ListView.separated(
+                      shrinkWrap: true,
+                      itemCount: _availableGoogleProfiles.length,
+                      separatorBuilder: (_, __) => const Divider(height: 1, color: Color(0xFFF1F5F9)),
+                      itemBuilder: (context, index) {
+                        final profile = _availableGoogleProfiles[index];
+                        return ListTile(
+                          contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          leading: CircleAvatar(
+                            backgroundColor: _getRoleColor(profile.role).withOpacity(0.15),
+                            child: Text(
+                              profile.name.isNotEmpty ? profile.name[0].toUpperCase() : 'G',
+                              style: TextStyle(
+                                color: _getRoleColor(profile.role),
+                                fontWeight: FontWeight.w700,
                               ),
-                              child: Text(
-                                profile.role.displayName,
-                                style: TextStyle(
-                                  fontSize: 10,
-                                  fontWeight: FontWeight.w700,
-                                  color: _getRoleColor(profile.role),
+                            ),
+                          ),
+                          title: Row(
+                            children: [
+                              Text(
+                                profile.name,
+                                style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+                              ),
+                              const SizedBox(width: 8),
+                              Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                decoration: BoxDecoration(
+                                  color: _getRoleColor(profile.role).withOpacity(0.1),
+                                  borderRadius: BorderRadius.circular(4),
+                                ),
+                                child: Text(
+                                  profile.role.displayName,
+                                  style: TextStyle(
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.w700,
+                                    color: _getRoleColor(profile.role),
+                                  ),
                                 ),
                               ),
-                            ),
-                          ],
-                        ),
-                        subtitle: Text(
-                          profile.emailOrPhone,
-                          style: const TextStyle(fontSize: 12, color: Color(0xFF64748B)),
-                        ),
-                        trailing: const Icon(Icons.chevron_right, size: 18, color: Color(0xFFCBD5E1)),
-                        onTap: () {
-                          Navigator.pop(context);
-                          if (profile.role == UserRole.teacher) {
-                            _showTeacherPositionSubjectSelector(
-                              email: profile.emailOrPhone,
-                              name: profile.name,
-                            );
-                          } else {
-                            _signInWithGoogle(profile.emailOrPhone, displayName: profile.name);
-                          }
-                        },
-                      );
-                    },
+                            ],
+                          ),
+                          subtitle: Text(
+                            profile.emailOrPhone,
+                            style: const TextStyle(fontSize: 12, color: Color(0xFF64748B)),
+                          ),
+                          trailing: const Icon(Icons.chevron_right, size: 18, color: Color(0xFFCBD5E1)),
+                          onTap: () {
+                            Navigator.pop(context);
+                            if (profile.role == UserRole.teacher) {
+                              _showTeacherPositionSubjectSelector(
+                                email: profile.emailOrPhone,
+                                name: profile.name,
+                              );
+                            } else {
+                              _signInWithGoogle(profile.emailOrPhone, displayName: profile.name);
+                            }
+                          },
+                        );
+                      },
+                    ),
+                  ),
+
+                const SizedBox(height: 16),
+                const Divider(),
+                const SizedBox(height: 12),
+
+                // Use another account button
+                OutlinedButton.icon(
+                  onPressed: () {
+                    Navigator.pop(context);
+                    _showCustomEmailDialog();
+                  },
+                  icon: const Icon(Icons.person_add_alt_1, size: 18),
+                  label: const Text('Use another Google Account'),
+                  style: OutlinedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    foregroundColor: const Color(0xFF0F172A),
+                    side: const BorderSide(color: Color(0xFFCBD5E1)),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                   ),
                 ),
-
-              const SizedBox(height: 16),
-              const Divider(),
-              const SizedBox(height: 12),
-
-              // Use another account button
-              OutlinedButton.icon(
-                onPressed: () {
-                  Navigator.pop(context);
-                  _showCustomEmailDialog();
-                },
-                icon: const Icon(Icons.person_add_alt_1, size: 18),
-                label: const Text('Use another Google Account'),
-                style: OutlinedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 14),
-                  foregroundColor: const Color(0xFF0F172A),
-                  side: const BorderSide(color: Color(0xFFCBD5E1)),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                ),
-              ),
-            ],
+              ],
+            ),
           ),
         );
       },
@@ -396,27 +408,29 @@ class _LoginScreenState extends State<LoginScreen> {
               const Text('Google Sign-In', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
             ],
           ),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text(
-                'Enter your registered Google Email account (@gmail.com or institutional domain):',
-                style: TextStyle(fontSize: 13, color: Color(0xFF64748B)),
-              ),
-              const SizedBox(height: 16),
-              TextField(
-                controller: _emailController,
-                keyboardType: TextInputType.emailAddress,
-                autofocus: true,
-                decoration: InputDecoration(
-                  labelText: 'Google Email',
-                  hintText: 'e.g. name@gmail.com',
-                  prefixIcon: const Icon(Icons.email_outlined),
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Enter your registered Google Email account (@gmail.com or institutional domain):',
+                  style: TextStyle(fontSize: 13, color: Color(0xFF64748B)),
                 ),
-              ),
-            ],
+                const SizedBox(height: 16),
+                TextField(
+                  controller: _emailController,
+                  keyboardType: TextInputType.emailAddress,
+                  autofocus: true,
+                  decoration: InputDecoration(
+                    labelText: 'Google Email',
+                    hintText: 'e.g. name@gmail.com',
+                    prefixIcon: const Icon(Icons.email_outlined),
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                  ),
+                ),
+              ],
+            ),
           ),
           actions: [
             TextButton(

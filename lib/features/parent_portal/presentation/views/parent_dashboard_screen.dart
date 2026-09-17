@@ -13,115 +13,190 @@ class ParentDashboardScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Student Ward Badge
-            Card(
-              color: Colors.white,
-              child: Padding(
-                padding: const EdgeInsets.all(18),
-                child: Row(
-                  children: [
-                    const CircleAvatar(
-                      radius: 26,
-                      backgroundColor: Color(0xFF4F46E5),
-                      child: Text(
-                        'LS',
+            LayoutBuilder(
+              builder: (context, constraints) {
+                final isWide = constraints.maxWidth >= 550;
+                final statusBadge = Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFDCFCE7),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: const [
+                      Icon(Icons.check_circle, size: 14, color: Color(0xFF16A34A)),
+                      SizedBox(width: 4),
+                      Text(
+                        'Present Today',
                         style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w700,
-                          fontSize: 16,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                          color: Color(0xFF16A34A),
                         ),
                       ),
-                    ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: const [
-                          Text(
-                            'Liam Scott • Roll No. 14',
-                            style: TextStyle(
-                              fontSize: 17,
-                              fontWeight: FontWeight.w700,
-                              color: Color(0xFF1E1B4B),
-                            ),
+                    ],
+                  ),
+                );
+
+                return Card(
+                  color: Colors.white,
+                  child: Padding(
+                    padding: const EdgeInsets.all(18),
+                    child: isWide
+                        ? Row(
+                            children: [
+                              const CircleAvatar(
+                                radius: 26,
+                                backgroundColor: Color(0xFF4F46E5),
+                                child: Text(
+                                  'LS',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w700,
+                                    fontSize: 16,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 16),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: const [
+                                    Text(
+                                      'Liam Scott • Roll No. 14',
+                                      style: TextStyle(
+                                        fontSize: 17,
+                                        fontWeight: FontWeight.w700,
+                                        color: Color(0xFF1E1B4B),
+                                      ),
+                                    ),
+                                    SizedBox(height: 4),
+                                    Text(
+                                      'Class 10-A • Class Teacher: Sarah Jenkins',
+                                      style: TextStyle(fontSize: 13, color: Color(0xFF64748B)),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              statusBadge,
+                            ],
+                          )
+                        : Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  const CircleAvatar(
+                                    radius: 22,
+                                    backgroundColor: Color(0xFF4F46E5),
+                                    child: Text(
+                                      'LS',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.w700,
+                                        fontSize: 14,
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 12),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: const [
+                                        Text(
+                                          'Liam Scott • Roll No. 14',
+                                          style: TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w700,
+                                            color: Color(0xFF1E1B4B),
+                                          ),
+                                        ),
+                                        SizedBox(height: 2),
+                                        Text(
+                                          'Class 10-A • Teacher: Sarah Jenkins',
+                                          style: TextStyle(fontSize: 12, color: Color(0xFF64748B)),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 12),
+                              statusBadge,
+                            ],
                           ),
-                          SizedBox(height: 4),
-                          Text(
-                            'Class 10-A • Class Teacher: Sarah Jenkins',
-                            style: TextStyle(fontSize: 13, color: Color(0xFF64748B)),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFDCFCE7),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Row(
-                        children: const [
-                          Icon(Icons.check_circle, size: 14, color: Color(0xFF16A34A)),
-                          SizedBox(width: 4),
-                          Text(
-                            'Present Today',
-                            style: TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w600,
-                              color: Color(0xFF16A34A),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+                  ),
+                );
+              },
             ),
             const SizedBox(height: 20),
 
-            // Quick Overview Indicators
-            Row(
-              children: [
-                Expanded(
-                  child: _buildStatCard(
-                    title: 'Attendance',
-                    value: '96.2%',
-                    caption: 'Present 46/48 Days',
-                    color: const Color(0xFF16A34A),
-                    icon: Icons.calendar_month,
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: _buildStatCard(
-                    title: 'Fee Dues',
-                    value: '\$0.00',
-                    caption: 'Term 1 Fully Settled',
-                    color: const Color(0xFF4F46E5),
-                    icon: Icons.account_balance_wallet_outlined,
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: _buildStatCard(
-                    title: 'Homework',
-                    value: '2 Due Today',
-                    caption: 'Math & Physics',
-                    color: const Color(0xFFD97706),
-                    icon: Icons.assignment_outlined,
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: _buildStatCard(
-                    title: 'Exam Grade',
-                    value: 'A (88.4%)',
-                    caption: 'Mid-Term Exam',
-                    color: const Color(0xFF7C3AED),
-                    icon: Icons.stars_outlined,
-                  ),
-                ),
-              ],
+            // Quick Overview Indicators: 4 in row on wide, 2x2 grid on portrait
+            LayoutBuilder(
+              builder: (context, constraints) {
+                final isWide = constraints.maxWidth >= 650;
+                final c1 = _buildStatCard(
+                  title: 'Attendance',
+                  value: '96.2%',
+                  caption: 'Present 46/48 Days',
+                  color: const Color(0xFF16A34A),
+                  icon: Icons.calendar_month,
+                );
+                final c2 = _buildStatCard(
+                  title: 'Fee Dues',
+                  value: '\$0.00',
+                  caption: 'Term 1 Fully Settled',
+                  color: const Color(0xFF4F46E5),
+                  icon: Icons.account_balance_wallet_outlined,
+                );
+                final c3 = _buildStatCard(
+                  title: 'Homework',
+                  value: '2 Due Today',
+                  caption: 'Math & Physics',
+                  color: const Color(0xFFD97706),
+                  icon: Icons.assignment_outlined,
+                );
+                final c4 = _buildStatCard(
+                  title: 'Exam Grade',
+                  value: 'A (88.4%)',
+                  caption: 'Mid-Term Exam',
+                  color: const Color(0xFF7C3AED),
+                  icon: Icons.stars_outlined,
+                );
+
+                return isWide
+                    ? Row(
+                        children: [
+                          Expanded(child: c1),
+                          const SizedBox(width: 12),
+                          Expanded(child: c2),
+                          const SizedBox(width: 12),
+                          Expanded(child: c3),
+                          const SizedBox(width: 12),
+                          Expanded(child: c4),
+                        ],
+                      )
+                    : Column(
+                        children: [
+                          Row(
+                            children: [
+                              Expanded(child: c1),
+                              const SizedBox(width: 12),
+                              Expanded(child: c2),
+                            ],
+                          ),
+                          const SizedBox(height: 12),
+                          Row(
+                            children: [
+                              Expanded(child: c3),
+                              const SizedBox(width: 12),
+                              Expanded(child: c4),
+                            ],
+                          ),
+                        ],
+                      );
+              },
             ),
             const SizedBox(height: 24),
 

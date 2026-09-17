@@ -15,6 +15,7 @@ class TeacherShellScreen extends StatelessWidget {
         backgroundColor: const Color(0xFF065F46), // Emerald 800
         foregroundColor: Colors.white,
         title: Row(
+          mainAxisSize: MainAxisSize.min,
           children: [
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
@@ -32,10 +33,13 @@ class TeacherShellScreen extends StatelessWidget {
                 ),
               ),
             ),
-            const SizedBox(width: 10),
-            const Text(
-              'Teacher & Staff Portal',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
+            const SizedBox(width: 8),
+            const Flexible(
+              child: Text(
+                'Staff Portal',
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
+              ),
             ),
           ],
         ),
@@ -44,9 +48,10 @@ class TeacherShellScreen extends StatelessWidget {
             builder: (context, state) {
               final userName = state is Authenticated ? state.user.name : 'Teacher';
               final designation = state is Authenticated ? state.user.designation : null;
+              final isWide = MediaQuery.of(context).size.width >= 600;
 
               return Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 12),
+                padding: const EdgeInsets.symmetric(horizontal: 8),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.end,
@@ -59,7 +64,7 @@ class TeacherShellScreen extends StatelessWidget {
                         color: Colors.white,
                       ),
                     ),
-                    if (designation != null)
+                    if (designation != null && isWide)
                       Text(
                         designation,
                         style: const TextStyle(

@@ -60,6 +60,7 @@ class _AdminShellScreenState extends State<AdminShellScreen> {
           backgroundColor: const Color(0xFF0F172A),
           foregroundColor: Colors.white,
           title: Row(
+            mainAxisSize: MainAxisSize.min,
             children: [
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
@@ -76,18 +77,21 @@ class _AdminShellScreenState extends State<AdminShellScreen> {
                   ),
                 ),
               ),
-              const SizedBox(width: 10),
-              const Text(
-                'School Governance Hub',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
+              const SizedBox(width: 8),
+              const Flexible(
+                child: Text(
+                  'Governance Hub',
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
+                ),
               ),
             ],
           ),
           actions: [
             // Session integrity countdown badge
             Container(
-              margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+              margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 4),
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               decoration: BoxDecoration(
                 color: Colors.white.withOpacity(0.12),
                 borderRadius: BorderRadius.circular(20),
@@ -98,19 +102,20 @@ class _AdminShellScreenState extends State<AdminShellScreen> {
                 ),
               ),
               child: Row(
+                mainAxisSize: MainAxisSize.min,
                 children: [
                   Icon(
                     Icons.timer_outlined,
-                    size: 15,
+                    size: 14,
                     color: _secondsRemaining < 120
                         ? const Color(0xFFEF4444)
                         : const Color(0xFFFBBF24),
                   ),
-                  const SizedBox(width: 6),
+                  const SizedBox(width: 4),
                   Text(
-                    'Session: ${_formatTimer(_secondsRemaining)}',
+                    _formatTimer(_secondsRemaining),
                     style: TextStyle(
-                      fontSize: 12,
+                      fontSize: 11,
                       fontWeight: FontWeight.w600,
                       color: _secondsRemaining < 120
                           ? const Color(0xFFEF4444)
@@ -120,20 +125,22 @@ class _AdminShellScreenState extends State<AdminShellScreen> {
                 ],
               ),
             ),
-            BlocBuilder<AuthBloc, AuthState>(
-              builder: (context, state) {
-                final userName = state is Authenticated ? state.user.name : 'Admin';
-                return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8),
-                  child: Center(
-                    child: Text(
-                      userName,
-                      style: const TextStyle(fontSize: 13, color: Color(0xFF94A3B8)),
-                    ),
-                  ),
-                );
-              },
-            ),
+            MediaQuery.of(context).size.width >= 600
+                ? BlocBuilder<AuthBloc, AuthState>(
+                    builder: (context, state) {
+                      final userName = state is Authenticated ? state.user.name : 'Admin';
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8),
+                        child: Center(
+                          child: Text(
+                            userName,
+                            style: const TextStyle(fontSize: 13, color: Color(0xFF94A3B8)),
+                          ),
+                        ),
+                      );
+                    },
+                  )
+                : const SizedBox.shrink(),
             IconButton(
               icon: const Icon(Icons.logout, size: 20),
               tooltip: 'Sign Out',

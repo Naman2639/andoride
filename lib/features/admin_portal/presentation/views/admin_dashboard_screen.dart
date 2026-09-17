@@ -292,54 +292,56 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
               Text('Instant UPI Fee Collection', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
             ],
           ),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                'Student: ${item['studentName']} (${item['rollNo']})',
-                style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 15),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                'Pending Dues: \$${item['dueAmount']}',
-                style: const TextStyle(color: Color(0xFFDC2626), fontWeight: FontWeight.w800, fontSize: 18),
-              ),
-              const SizedBox(height: 16),
-              // Simulated QR Code Frame
-              Container(
-                width: 180,
-                height: 180,
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: const Color(0xFFCBD5E1), width: 2),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  'Student: ${item['studentName']} (${item['rollNo']})',
+                  style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 15),
                 ),
-                child: Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Icon(Icons.qr_code_scanner, size: 90, color: Color(0xFF0F172A)),
-                      const SizedBox(height: 6),
-                      Text(
-                        'UPI ID: schoolfees@okaxis',
-                        style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: Colors.grey.shade700),
-                      ),
-                      Text(
-                        'Amount: \$${item['dueAmount']}',
-                        style: const TextStyle(fontSize: 10, color: Color(0xFF16A34A), fontWeight: FontWeight.w600),
-                      ),
-                    ],
+                const SizedBox(height: 4),
+                Text(
+                  'Pending Dues: \$${item['dueAmount']}',
+                  style: const TextStyle(color: Color(0xFFDC2626), fontWeight: FontWeight.w800, fontSize: 18),
+                ),
+                const SizedBox(height: 16),
+                // Simulated QR Code Frame
+                Container(
+                  width: 180,
+                  height: 180,
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(color: const Color(0xFFCBD5E1), width: 2),
+                  ),
+                  child: Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(Icons.qr_code_scanner, size: 90, color: Color(0xFF0F172A)),
+                        const SizedBox(height: 6),
+                        Text(
+                          'UPI ID: schoolfees@okaxis',
+                          style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: Colors.grey.shade700),
+                        ),
+                        Text(
+                          'Amount: \$${item['dueAmount']}',
+                          style: const TextStyle(fontSize: 10, color: Color(0xFF16A34A), fontWeight: FontWeight.w600),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-              ),
-              const SizedBox(height: 14),
-              const Text(
-                'Scan via Google Pay, PhonePe, Paytm, or BHIM to settle term balance immediately.',
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 12, color: Color(0xFF64748B)),
-              ),
-            ],
+                const SizedBox(height: 14),
+                const Text(
+                  'Scan via Google Pay, PhonePe, Paytm, or BHIM to settle term balance immediately.',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 12, color: Color(0xFF64748B)),
+                ),
+              ],
+            ),
           ),
           actions: [
             TextButton(
@@ -394,53 +396,55 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
           ),
           content: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 480),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFF1F5F9),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Row(
-                    children: [
-                      const Icon(Icons.info_outline, size: 18, color: Color(0xFF0F172A)),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: Text(
-                          '${hw['class']} • ${hw['subject']} • ${hw['teacher']}',
-                          style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13),
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFF1F5F9),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Row(
+                      children: [
+                        const Icon(Icons.info_outline, size: 18, color: Color(0xFF0F172A)),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            '${hw['class']} • ${hw['subject']} • ${hw['teacher']}',
+                            style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13),
+                          ),
                         ),
-                      ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  const Text('Curriculum Homework Document Content:', style: TextStyle(fontWeight: FontWeight.w700)),
+                  const SizedBox(height: 6),
+                  Container(
+                    padding: const EdgeInsets.all(14),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      border: Border.all(color: const Color(0xFFE2E8F0)),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Text(
+                      hw['docContent'] as String,
+                      style: const TextStyle(fontSize: 13, height: 1.4, color: Color(0xFF334155)),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text('Total Pages: ${hw['docPages']}', style: const TextStyle(color: Color(0xFF64748B), fontSize: 12)),
+                      Text('Due Date: ${hw['dueDate']}', style: const TextStyle(color: Color(0xFF64748B), fontSize: 12)),
                     ],
                   ),
-                ),
-                const SizedBox(height: 16),
-                const Text('Curriculum Homework Document Content:', style: TextStyle(fontWeight: FontWeight.w700)),
-                const SizedBox(height: 6),
-                Container(
-                  padding: const EdgeInsets.all(14),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    border: Border.all(color: const Color(0xFFE2E8F0)),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Text(
-                    hw['docContent'] as String,
-                    style: const TextStyle(fontSize: 13, height: 1.4, color: Color(0xFF334155)),
-                  ),
-                ),
-                const SizedBox(height: 12),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text('Total Pages: ${hw['docPages']}', style: const TextStyle(color: Color(0xFF64748B), fontSize: 12)),
-                    Text('Due Date: ${hw['dueDate']}', style: const TextStyle(color: Color(0xFF64748B), fontSize: 12)),
-                  ],
-                ),
-              ],
+                ],
+              ),
             ),
           ),
           actions: [
@@ -507,21 +511,24 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
                     ),
                   ),
                   const SizedBox(height: 16),
-                  DataTable(
-                    columnSpacing: 16,
-                    columns: const [
-                      DataColumn(label: Text('Subject', style: TextStyle(fontWeight: FontWeight.w700))),
-                      DataColumn(label: Text('Max')),
-                      DataColumn(label: Text('Scored')),
-                      DataColumn(label: Text('Grade')),
-                    ],
-                    rows: const [
-                      DataRow(cells: [DataCell(Text('Mathematics')), DataCell(Text('100')), DataCell(Text('94')), DataCell(Text('A1'))]),
-                      DataRow(cells: [DataCell(Text('Physics')), DataCell(Text('100')), DataCell(Text('91')), DataCell(Text('A1'))]),
-                      DataRow(cells: [DataCell(Text('Chemistry')), DataCell(Text('100')), DataCell(Text('88')), DataCell(Text('A2'))]),
-                      DataRow(cells: [DataCell(Text('English Core')), DataCell(Text('100')), DataCell(Text('95')), DataCell(Text('A1'))]),
-                      DataRow(cells: [DataCell(Text('Computer Sci')), DataCell(Text('100')), DataCell(Text('98')), DataCell(Text('A1'))]),
-                    ],
+                  SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: DataTable(
+                      columnSpacing: 16,
+                      columns: const [
+                        DataColumn(label: Text('Subject', style: TextStyle(fontWeight: FontWeight.w700))),
+                        DataColumn(label: Text('Max')),
+                        DataColumn(label: Text('Scored')),
+                        DataColumn(label: Text('Grade')),
+                      ],
+                      rows: const [
+                        DataRow(cells: [DataCell(Text('Mathematics')), DataCell(Text('100')), DataCell(Text('94')), DataCell(Text('A1'))]),
+                        DataRow(cells: [DataCell(Text('Physics')), DataCell(Text('100')), DataCell(Text('91')), DataCell(Text('A1'))]),
+                        DataRow(cells: [DataCell(Text('Chemistry')), DataCell(Text('100')), DataCell(Text('88')), DataCell(Text('A2'))]),
+                        DataRow(cells: [DataCell(Text('English Core')), DataCell(Text('100')), DataCell(Text('95')), DataCell(Text('A1'))]),
+                        DataRow(cells: [DataCell(Text('Computer Sci')), DataCell(Text('100')), DataCell(Text('98')), DataCell(Text('A1'))]),
+                      ],
+                    ),
                   ),
                   const SizedBox(height: 16),
                   Container(
@@ -579,48 +586,88 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
       backgroundColor: const Color(0xFFF8FAFC),
       body: Column(
         children: [
-          // Header Bar with KPI Summary & Add Teacher Button
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 18),
-            decoration: const BoxDecoration(
-              color: Colors.white,
-              border: Border(bottom: BorderSide(color: Color(0xFFE2E8F0))),
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: const [
-                    Text(
-                      'Institution Governance Hub',
-                      style: TextStyle(
-                        fontSize: 22,
-                        fontWeight: FontWeight.w800,
-                        color: Color(0xFF0F172A),
-                        letterSpacing: -0.3,
+          // Responsive Header Bar
+          LayoutBuilder(
+            builder: (context, constraints) {
+              final isWide = constraints.maxWidth >= 650;
+              return Container(
+                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                decoration: const BoxDecoration(
+                  color: Colors.white,
+                  border: Border(bottom: BorderSide(color: Color(0xFFE2E8F0))),
+                ),
+                child: isWide
+                    ? Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: const [
+                                Text(
+                                  'Institution Governance Hub',
+                                  style: TextStyle(
+                                    fontSize: 22,
+                                    fontWeight: FontWeight.w800,
+                                    color: Color(0xFF0F172A),
+                                    letterSpacing: -0.3,
+                                  ),
+                                ),
+                                SizedBox(height: 2),
+                                Text(
+                                  'Live Institutional Analytics, Role Allocation & Real-Time Classroom Watch',
+                                  style: TextStyle(fontSize: 13, color: Color(0xFF64748B)),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(width: 16),
+                          ElevatedButton.icon(
+                            onPressed: _showAddTeacherDialog,
+                            icon: const Icon(Icons.add, size: 18),
+                            label: const Text('Register New Teacher ID'),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFF0F172A),
+                              foregroundColor: Colors.white,
+                              padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                            ),
+                          ),
+                        ],
+                      )
+                    : Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          const Text(
+                            'Institution Governance Hub',
+                            style: TextStyle(
+                              fontSize: 19,
+                              fontWeight: FontWeight.w800,
+                              color: Color(0xFF0F172A),
+                              letterSpacing: -0.3,
+                            ),
+                          ),
+                          const SizedBox(height: 2),
+                          const Text(
+                            'Live Analytics, Role Allocation & Classroom Watch',
+                            style: TextStyle(fontSize: 12, color: Color(0xFF64748B)),
+                          ),
+                          const SizedBox(height: 12),
+                          ElevatedButton.icon(
+                            onPressed: _showAddTeacherDialog,
+                            icon: const Icon(Icons.add, size: 18),
+                            label: const Text('Register New Teacher ID'),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFF0F172A),
+                              foregroundColor: Colors.white,
+                              padding: const EdgeInsets.symmetric(vertical: 12),
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                            ),
+                          ),
+                        ],
                       ),
-                    ),
-                    SizedBox(height: 2),
-                    Text(
-                      'Live Institutional Analytics, Role Allocation & Real-Time Classroom Watch',
-                      style: TextStyle(fontSize: 13, color: Color(0xFF64748B)),
-                    ),
-                  ],
-                ),
-                ElevatedButton.icon(
-                  onPressed: _showAddTeacherDialog,
-                  icon: const Icon(Icons.add, size: 18),
-                  label: const Text('Register New Teacher ID'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF0F172A),
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                  ),
-                ),
-              ],
-            ),
+              );
+            },
           ),
 
           // Primary Module Tabs
@@ -668,130 +715,136 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
   // TAB 1: ATTENDANCE ANALYTICS (PIE CHART)
   // ==========================================
   Widget _buildAttendanceAnalyticsTab() {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(24),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Teacher Attendance Pie Chart Card
-              Expanded(
-                flex: 5,
-                child: Card(
-                  elevation: 1,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
-                  child: Padding(
-                    padding: const EdgeInsets.all(22),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            const Text(
-                              'Teacher Attendance Rate (Today)',
-                              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
-                            ),
-                            Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                              decoration: BoxDecoration(
-                                color: const Color(0xFFECFDF5),
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              child: const Text(
-                                '88% Present',
-                                style: TextStyle(color: Color(0xFF059669), fontWeight: FontWeight.w700, fontSize: 12),
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 20),
-                        Row(
-                          children: [
-                            SizedBox(
-                              width: 140,
-                              height: 140,
-                              child: CustomPaint(
-                                painter: _PieChartPainter(
-                                  presentPct: 0.88,
-                                  leavePct: 0.08,
-                                  absentPct: 0.04,
-                                ),
-                              ),
-                            ),
-                            const SizedBox(width: 24),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  _buildLegendRow('Present & In-Class', '60 Teachers (88%)', const Color(0xFF059669)),
-                                  const SizedBox(height: 10),
-                                  _buildLegendRow('Approved Leave', '5 Teachers (8%)', const Color(0xFFF59E0B)),
-                                  const SizedBox(height: 10),
-                                  _buildLegendRow('Unplanned Absent', '3 Teachers (4%)', const Color(0xFFDC2626)),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final isWide = constraints.maxWidth >= 768;
 
-              const SizedBox(width: 20),
-
-              // Student Overall Attendance Rate Card
-              Expanded(
-                flex: 5,
-                child: Card(
-                  elevation: 1,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
-                  child: Padding(
-                    padding: const EdgeInsets.all(22),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            const Text(
-                              'Student Attendance Rate (Institutional)',
-                              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
-                            ),
-                            Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                              decoration: BoxDecoration(
-                                color: const Color(0xFFEFF6FF),
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              child: const Text(
-                                '94.2% Overall',
-                                style: TextStyle(color: Color(0xFF2563EB), fontWeight: FontWeight.w700, fontSize: 12),
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 16),
-                        _buildStudentRateBar('Class 10-A', 0.952, '40 / 42 Present (95.2%)', const Color(0xFF059669)),
-                        const SizedBox(height: 10),
-                        _buildStudentRateBar('Class 10-B', 0.925, '37 / 40 Present (92.5%)', const Color(0xFF2563EB)),
-                        const SizedBox(height: 10),
-                        _buildStudentRateBar('Class 9-A', 0.960, '39 / 41 Present (96.0%)', const Color(0xFF7C3AED)),
-                        const SizedBox(height: 10),
-                        _buildStudentRateBar('Class 9-B', 0.910, '36 / 39 Present (91.0%)', const Color(0xFFD97706)),
-                      ],
+        final pieCard = Card(
+          elevation: 1,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+          child: Padding(
+            padding: const EdgeInsets.all(22),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      'Teacher Attendance Rate (Today)',
+                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
                     ),
-                  ),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFECFDF5),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: const Text(
+                        '88% Present',
+                        style: TextStyle(color: Color(0xFF059669), fontWeight: FontWeight.w700, fontSize: 12),
+                      ),
+                    ),
+                  ],
                 ),
-              ),
-            ],
+                const SizedBox(height: 20),
+                Wrap(
+                  spacing: 24,
+                  runSpacing: 16,
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  children: [
+                    SizedBox(
+                      width: 140,
+                      height: 140,
+                      child: CustomPaint(
+                        painter: _PieChartPainter(
+                          presentPct: 0.88,
+                          leavePct: 0.08,
+                          absentPct: 0.04,
+                        ),
+                      ),
+                    ),
+                    ConstrainedBox(
+                      constraints: const BoxConstraints(minWidth: 200),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          _buildLegendRow('Present & In-Class', '60 Teachers (88%)', const Color(0xFF059669)),
+                          const SizedBox(height: 10),
+                          _buildLegendRow('Approved Leave', '5 Teachers (8%)', const Color(0xFFF59E0B)),
+                          const SizedBox(height: 10),
+                          _buildLegendRow('Unplanned Absent', '3 Teachers (4%)', const Color(0xFFDC2626)),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
-        ],
-      ),
+        );
+
+        final studentCard = Card(
+          elevation: 1,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+          child: Padding(
+            padding: const EdgeInsets.all(22),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      'Student Attendance Rate (Institutional)',
+                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
+                    ),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFEFF6FF),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: const Text(
+                        '94.2% Overall',
+                        style: TextStyle(color: Color(0xFF2563EB), fontWeight: FontWeight.w700, fontSize: 12),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                _buildStudentRateBar('Class 10-A', 0.952, '40 / 42 Present (95.2%)', const Color(0xFF059669)),
+                const SizedBox(height: 10),
+                _buildStudentRateBar('Class 10-B', 0.925, '37 / 40 Present (92.5%)', const Color(0xFF2563EB)),
+                const SizedBox(height: 10),
+                _buildStudentRateBar('Class 9-A', 0.960, '39 / 41 Present (96.0%)', const Color(0xFF7C3AED)),
+                const SizedBox(height: 10),
+                _buildStudentRateBar('Class 9-B', 0.910, '36 / 39 Present (91.0%)', const Color(0xFFD97706)),
+              ],
+            ),
+          ),
+        );
+
+        return SingleChildScrollView(
+          padding: const EdgeInsets.all(20),
+          child: isWide
+              ? Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(child: pieCard),
+                    const SizedBox(width: 20),
+                    Expanded(child: studentCard),
+                  ],
+                )
+              : Column(
+                  children: [
+                    pieCard,
+                    const SizedBox(height: 18),
+                    studentCard,
+                  ],
+                ),
+        );
+      },
     );
   }
 
@@ -843,27 +896,51 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text('Authorized Teacher & Faculty Directory', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
-                      const SizedBox(height: 2),
-                      Text('Total Faculty: ${_teachers.length} registered accounts', style: const TextStyle(color: Color(0xFF64748B), fontSize: 13)),
-                    ],
-                  ),
-                  ElevatedButton.icon(
-                    onPressed: _showAddTeacherDialog,
-                    icon: const Icon(Icons.person_add, size: 16),
-                    label: const Text('Add Teacher ID'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF0F172A),
-                      foregroundColor: Colors.white,
-                    ),
-                  ),
-                ],
+              LayoutBuilder(
+                builder: (context, constraints) {
+                  final isWide = constraints.maxWidth >= 550;
+                  return isWide
+                      ? Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Text('Authorized Teacher & Faculty Directory', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
+                                const SizedBox(height: 2),
+                                Text('Total Faculty: ${_teachers.length} registered accounts', style: const TextStyle(color: Color(0xFF64748B), fontSize: 13)),
+                              ],
+                            ),
+                            ElevatedButton.icon(
+                              onPressed: _showAddTeacherDialog,
+                              icon: const Icon(Icons.person_add, size: 16),
+                              label: const Text('Add Teacher ID'),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: const Color(0xFF0F172A),
+                                foregroundColor: Colors.white,
+                              ),
+                            ),
+                          ],
+                        )
+                      : Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            const Text('Authorized Teacher & Faculty Directory', style: TextStyle(fontSize: 17, fontWeight: FontWeight.w700)),
+                            const SizedBox(height: 2),
+                            Text('Total Faculty: ${_teachers.length} registered accounts', style: const TextStyle(color: Color(0xFF64748B), fontSize: 13)),
+                            const SizedBox(height: 12),
+                            ElevatedButton.icon(
+                              onPressed: _showAddTeacherDialog,
+                              icon: const Icon(Icons.person_add, size: 16),
+                              label: const Text('Add Teacher ID'),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: const Color(0xFF0F172A),
+                                foregroundColor: Colors.white,
+                              ),
+                            ),
+                          ],
+                        );
+                },
               ),
               const SizedBox(height: 16),
               const Divider(),
@@ -882,7 +959,9 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
                     ),
                     title: Row(
                       children: [
-                        Text(t.name, style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 14)),
+                        Flexible(
+                          child: Text(t.name, style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 14)),
+                        ),
                         const SizedBox(width: 8),
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
@@ -945,64 +1024,113 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
 
                   return Padding(
                     padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 6),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            color: isPending ? const Color(0xFFFEF3C7) : const Color(0xFFECFDF5),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Icon(
-                            isPending ? Icons.pending_actions : Icons.check_circle_outline,
-                            color: isPending ? const Color(0xFFD97706) : const Color(0xFF059669),
-                            size: 24,
-                          ),
-                        ),
-                        const SizedBox(width: 14),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(item['teacherName'] as String, style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 15)),
-                              const SizedBox(height: 2),
-                              Text('${item['type']} • ${item['dates']}', style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Color(0xFF0F172A))),
-                              const SizedBox(height: 4),
-                              Text('Reason: ${item['reason']}', style: const TextStyle(fontSize: 12, color: Color(0xFF64748B))),
-                            ],
-                          ),
-                        ),
-                        if (isPending) ...[
-                          OutlinedButton(
-                            onPressed: () {
-                              setState(() => item['status'] = 'Rejected');
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(content: Text('Leave rejected for ${item['teacherName']}')),
+                    child: LayoutBuilder(
+                      builder: (context, constraints) {
+                        final isWide = constraints.maxWidth >= 600;
+                        final actionButtons = isPending
+                            ? Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  OutlinedButton(
+                                    onPressed: () {
+                                      setState(() => item['status'] = 'Rejected');
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(content: Text('Leave rejected for ${item['teacherName']}')),
+                                      );
+                                    },
+                                    style: OutlinedButton.styleFrom(foregroundColor: const Color(0xFFDC2626)),
+                                    child: const Text('Reject'),
+                                  ),
+                                  const SizedBox(width: 8),
+                                  ElevatedButton(
+                                    onPressed: () {
+                                      setState(() => item['status'] = 'Approved');
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(content: Text('Leave approved for ${item['teacherName']}'), backgroundColor: const Color(0xFF16A34A)),
+                                      );
+                                    },
+                                    style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF16A34A), foregroundColor: Colors.white),
+                                    child: const Text('Approve'),
+                                  ),
+                                ],
+                              )
+                            : Chip(
+                                label: Text(item['status'] as String),
+                                backgroundColor: const Color(0xFFECFDF5),
+                                labelStyle: const TextStyle(color: Color(0xFF059669), fontWeight: FontWeight.w700, fontSize: 12),
                               );
-                            },
-                            style: OutlinedButton.styleFrom(foregroundColor: const Color(0xFFDC2626)),
-                            child: const Text('Reject'),
-                          ),
-                          const SizedBox(width: 8),
-                          ElevatedButton(
-                            onPressed: () {
-                              setState(() => item['status'] = 'Approved');
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(content: Text('Leave approved for ${item['teacherName']}'), backgroundColor: const Color(0xFF16A34A)),
+
+                        return isWide
+                            ? Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Container(
+                                    padding: const EdgeInsets.all(12),
+                                    decoration: BoxDecoration(
+                                      color: isPending ? const Color(0xFFFEF3C7) : const Color(0xFFECFDF5),
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    child: Icon(
+                                      isPending ? Icons.pending_actions : Icons.check_circle_outline,
+                                      color: isPending ? const Color(0xFFD97706) : const Color(0xFF059669),
+                                      size: 24,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 14),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(item['teacherName'] as String, style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 15)),
+                                        const SizedBox(height: 2),
+                                        Text('${item['type']} • ${item['dates']}', style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Color(0xFF0F172A))),
+                                        const SizedBox(height: 4),
+                                        Text('Reason: ${item['reason']}', style: const TextStyle(fontSize: 12, color: Color(0xFF64748B))),
+                                      ],
+                                    ),
+                                  ),
+                                  const SizedBox(width: 12),
+                                  actionButtons,
+                                ],
+                              )
+                            : Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Container(
+                                        padding: const EdgeInsets.all(10),
+                                        decoration: BoxDecoration(
+                                          color: isPending ? const Color(0xFFFEF3C7) : const Color(0xFFECFDF5),
+                                          borderRadius: BorderRadius.circular(12),
+                                        ),
+                                        child: Icon(
+                                          isPending ? Icons.pending_actions : Icons.check_circle_outline,
+                                          color: isPending ? const Color(0xFFD97706) : const Color(0xFF059669),
+                                          size: 22,
+                                        ),
+                                      ),
+                                      const SizedBox(width: 12),
+                                      Expanded(
+                                        child: Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            Text(item['teacherName'] as String, style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 15)),
+                                            const SizedBox(height: 2),
+                                            Text('${item['type']} • ${item['dates']}', style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Color(0xFF0F172A))),
+                                            const SizedBox(height: 4),
+                                            Text('Reason: ${item['reason']}', style: const TextStyle(fontSize: 12, color: Color(0xFF64748B))),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 10),
+                                  actionButtons,
+                                ],
                               );
-                            },
-                            style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF16A34A), foregroundColor: Colors.white),
-                            child: const Text('Approve'),
-                          ),
-                        ] else ...[
-                          Chip(
-                            label: Text(item['status'] as String),
-                            backgroundColor: const Color(0xFFECFDF5),
-                            labelStyle: const TextStyle(color: Color(0xFF059669), fontWeight: FontWeight.w700, fontSize: 12),
-                          ),
-                        ],
-                      ],
+                      },
                     ),
                   );
                 },
@@ -1018,106 +1146,122 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
   // TAB 4: FEE LEDGER & UPI PAYMENT
   // ==========================================
   Widget _buildFeeLedgerTab() {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(24),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // KPI strip
-          Row(
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final isWide = constraints.maxWidth >= 650;
+        return SingleChildScrollView(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildKpiMiniCard('Total Billed Dues', '\$74,000', const Color(0xFF0F172A)),
-              const SizedBox(width: 16),
-              _buildKpiMiniCard('Collected via UPI / Cash', '\$47,000', const Color(0xFF16A34A)),
-              const SizedBox(width: 16),
-              _buildKpiMiniCard('Outstanding Balance', '\$27,000', const Color(0xFFDC2626)),
+              // KPI strip: side-by-side in landscape, stacked full-width in portrait
+              isWide
+                  ? Row(
+                      children: [
+                        Expanded(child: _buildKpiMiniCard('Total Billed Dues', '\$74,000', const Color(0xFF0F172A))),
+                        const SizedBox(width: 16),
+                        Expanded(child: _buildKpiMiniCard('Collected via UPI / Cash', '\$47,000', const Color(0xFF16A34A))),
+                        const SizedBox(width: 16),
+                        Expanded(child: _buildKpiMiniCard('Outstanding Balance', '\$27,000', const Color(0xFFDC2626))),
+                      ],
+                    )
+                  : Column(
+                      children: [
+                        SizedBox(width: double.infinity, child: _buildKpiMiniCard('Total Billed Dues', '\$74,000', const Color(0xFF0F172A))),
+                        const SizedBox(height: 10),
+                        SizedBox(width: double.infinity, child: _buildKpiMiniCard('Collected via UPI / Cash', '\$47,000', const Color(0xFF16A34A))),
+                        const SizedBox(height: 10),
+                        SizedBox(width: double.infinity, child: _buildKpiMiniCard('Outstanding Balance', '\$27,000', const Color(0xFFDC2626))),
+                      ],
+                    ),
+              const SizedBox(height: 20),
+              Card(
+                elevation: 1,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+                child: Padding(
+                  padding: const EdgeInsets.all(20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text('Student Fee Ledger & Digital UPI Collections', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
+                      const SizedBox(height: 4),
+                      const Text('Directly collect tuition and laboratory dues using dynamic institutional UPI QR codes.', style: TextStyle(color: Color(0xFF64748B), fontSize: 13)),
+                      const SizedBox(height: 16),
+                      SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: DataTable(
+                          columnSpacing: 20,
+                          columns: const [
+                            DataColumn(label: Text('Student', style: TextStyle(fontWeight: FontWeight.w700))),
+                            DataColumn(label: Text('Roll No')),
+                            DataColumn(label: Text('Class')),
+                            DataColumn(label: Text('Total')),
+                            DataColumn(label: Text('Due')),
+                            DataColumn(label: Text('Status')),
+                            DataColumn(label: Text('Action')),
+                          ],
+                          rows: _feeLedger.map((item) {
+                            final isDue = (item['dueAmount'] as int) > 0;
+                            return DataRow(cells: [
+                              DataCell(Text(item['studentName'] as String, style: const TextStyle(fontWeight: FontWeight.w600))),
+                              DataCell(Text(item['rollNo'] as String)),
+                              DataCell(Text(item['class'] as String)),
+                              DataCell(Text('\$${item['totalFee']}')),
+                              DataCell(Text('\$${item['dueAmount']}', style: TextStyle(color: isDue ? const Color(0xFFDC2626) : const Color(0xFF059669), fontWeight: FontWeight.w700))),
+                              DataCell(
+                                Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                                  decoration: BoxDecoration(
+                                    color: isDue ? const Color(0xFFFEF2F2) : const Color(0xFFECFDF5),
+                                    borderRadius: BorderRadius.circular(6),
+                                  ),
+                                  child: Text(
+                                    item['status'] as String,
+                                    style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: isDue ? const Color(0xFFDC2626) : const Color(0xFF059669)),
+                                  ),
+                                ),
+                              ),
+                              DataCell(
+                                isDue
+                                    ? ElevatedButton.icon(
+                                        onPressed: () => _showUpiPaymentDialog(item),
+                                        icon: const Icon(Icons.qr_code, size: 14),
+                                        label: const Text('UPI Pay'),
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor: const Color(0xFF0F172A),
+                                          foregroundColor: Colors.white,
+                                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                                        ),
+                                      )
+                                    : const Icon(Icons.check_circle, color: Color(0xFF059669), size: 20),
+                              ),
+                            ]);
+                          }).toList(),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
             ],
           ),
-          const SizedBox(height: 20),
-          Card(
-            elevation: 1,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
-            child: Padding(
-              padding: const EdgeInsets.all(20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text('Student Fee Ledger & Digital UPI Collections', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
-                  const SizedBox(height: 4),
-                  const Text('Directly collect tuition and laboratory dues using dynamic institutional UPI QR codes.', style: TextStyle(color: Color(0xFF64748B), fontSize: 13)),
-                  const SizedBox(height: 16),
-                  DataTable(
-                    columnSpacing: 20,
-                    columns: const [
-                      DataColumn(label: Text('Student', style: TextStyle(fontWeight: FontWeight.w700))),
-                      DataColumn(label: Text('Roll No')),
-                      DataColumn(label: Text('Class')),
-                      DataColumn(label: Text('Total')),
-                      DataColumn(label: Text('Due')),
-                      DataColumn(label: Text('Status')),
-                      DataColumn(label: Text('Action')),
-                    ],
-                    rows: _feeLedger.map((item) {
-                      final isDue = (item['dueAmount'] as int) > 0;
-                      return DataRow(cells: [
-                        DataCell(Text(item['studentName'] as String, style: const TextStyle(fontWeight: FontWeight.w600))),
-                        DataCell(Text(item['rollNo'] as String)),
-                        DataCell(Text(item['class'] as String)),
-                        DataCell(Text('\$${item['totalFee']}')),
-                        DataCell(Text('\$${item['dueAmount']}', style: TextStyle(color: isDue ? const Color(0xFFDC2626) : const Color(0xFF059669), fontWeight: FontWeight.w700))),
-                        DataCell(
-                          Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                            decoration: BoxDecoration(
-                              color: isDue ? const Color(0xFFFEF2F2) : const Color(0xFFECFDF5),
-                              borderRadius: BorderRadius.circular(6),
-                            ),
-                            child: Text(
-                              item['status'] as String,
-                              style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: isDue ? const Color(0xFFDC2626) : const Color(0xFF059669)),
-                            ),
-                          ),
-                        ),
-                        DataCell(
-                          isDue
-                              ? ElevatedButton.icon(
-                                  onPressed: () => _showUpiPaymentDialog(item),
-                                  icon: const Icon(Icons.qr_code, size: 14),
-                                  label: const Text('UPI Pay'),
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: const Color(0xFF0F172A),
-                                    foregroundColor: Colors.white,
-                                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                                  ),
-                                )
-                              : const Icon(Icons.check_circle, color: Color(0xFF059669), size: 20),
-                        ),
-                      ]);
-                    }).toList(),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ],
-      ),
+        );
+      },
     );
   }
 
   Widget _buildKpiMiniCard(String title, String value, Color color) {
-    return Expanded(
-      child: Card(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-        child: Padding(
-          padding: const EdgeInsets.all(18),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(title, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Color(0xFF64748B))),
-              const SizedBox(height: 6),
-              Text(value, style: TextStyle(fontSize: 22, fontWeight: FontWeight.w800, color: color)),
-            ],
-          ),
+    return Card(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+      child: Padding(
+        padding: const EdgeInsets.all(18),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(title, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Color(0xFF64748B))),
+            const SizedBox(height: 6),
+            Text(value, style: TextStyle(fontSize: 22, fontWeight: FontWeight.w800, color: color)),
+          ],
         ),
       ),
     );
@@ -1135,8 +1279,11 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: const [
-              Text('Live Classroom Operations & Structured Homework Vault', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
-              Chip(label: Text('3 Classes In Session', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 11))),
+              Flexible(
+                child: Text('Live Classroom Operations & Structured Homework Vault', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
+              ),
+              SizedBox(width: 8),
+              Chip(label: Text('3 In Session', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 11))),
             ],
           ),
           const SizedBox(height: 6),
@@ -1157,10 +1304,14 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      Wrap(
+                        alignment: WrapAlignment.spaceBetween,
+                        crossAxisAlignment: WrapCrossAlignment.center,
+                        spacing: 8,
+                        runSpacing: 6,
                         children: [
                           Row(
+                            mainAxisSize: MainAxisSize.min,
                             children: [
                               Container(
                                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
@@ -1183,14 +1334,19 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
                         children: [
                           const Icon(Icons.play_circle_fill, size: 16, color: Color(0xFF059669)),
                           const SizedBox(width: 6),
-                          Text('Currently Running Topic: ${hw['runningTopic']}', style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13, color: Color(0xFF334155))),
+                          Expanded(
+                            child: Text('Currently Running Topic: ${hw['runningTopic']}', style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13, color: Color(0xFF334155))),
+                          ),
                         ],
                       ),
                       const SizedBox(height: 8),
                       Text('Assigned Homework: ${hw['homeworkTitle']}', style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13, color: Color(0xFF0F172A))),
                       const SizedBox(height: 14),
                       // Document Attachment Button
-                      Row(
+                      Wrap(
+                        crossAxisAlignment: WrapCrossAlignment.center,
+                        spacing: 12,
+                        runSpacing: 8,
                         children: [
                           ElevatedButton.icon(
                             onPressed: () => _showDocumentViewerDialog(hw),
@@ -1202,7 +1358,6 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
                               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
                             ),
                           ),
-                          const SizedBox(width: 12),
                           Text('Due: ${hw['dueDate']}', style: const TextStyle(color: Color(0xFF64748B), fontSize: 12)),
                         ],
                       ),
@@ -1231,55 +1386,82 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> with Single
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: const [
-                      Text('Examination Terms & Signed Report Cards', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
-                      SizedBox(height: 2),
-                      Text('Term Assessments, GPA validation, and digital certificate verification.', style: TextStyle(color: Color(0xFF64748B), fontSize: 13)),
-                    ],
-                  ),
-                  ElevatedButton.icon(
-                    onPressed: _showReportCardDialog,
-                    icon: const Icon(Icons.visibility, size: 16),
-                    label: const Text('View Signed Sample Card'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFFD97706),
-                      foregroundColor: Colors.white,
-                    ),
-                  ),
-                ],
+              LayoutBuilder(
+                builder: (context, constraints) {
+                  final isWide = constraints.maxWidth >= 550;
+                  return isWide
+                      ? Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: const [
+                                Text('Examination Terms & Signed Report Cards', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
+                                SizedBox(height: 2),
+                                Text('Term Assessments, GPA validation, and digital certificate verification.', style: TextStyle(color: Color(0xFF64748B), fontSize: 13)),
+                              ],
+                            ),
+                            ElevatedButton.icon(
+                              onPressed: _showReportCardDialog,
+                              icon: const Icon(Icons.visibility, size: 16),
+                              label: const Text('View Signed Sample Card'),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: const Color(0xFFD97706),
+                                foregroundColor: Colors.white,
+                              ),
+                            ),
+                          ],
+                        )
+                      : Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            const Text('Examination Terms & Signed Report Cards', style: TextStyle(fontSize: 17, fontWeight: FontWeight.w700)),
+                            const SizedBox(height: 2),
+                            const Text('Term Assessments, GPA validation, and digital certificate verification.', style: TextStyle(color: Color(0xFF64748B), fontSize: 13)),
+                            const SizedBox(height: 12),
+                            ElevatedButton.icon(
+                              onPressed: _showReportCardDialog,
+                              icon: const Icon(Icons.visibility, size: 16),
+                              label: const Text('View Signed Sample Card'),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: const Color(0xFFD97706),
+                                foregroundColor: Colors.white,
+                              ),
+                            ),
+                          ],
+                        );
+                },
               ),
               const SizedBox(height: 16),
               const Divider(),
-              DataTable(
-                columnSpacing: 24,
-                columns: const [
-                  DataColumn(label: Text('Exam Term', style: TextStyle(fontWeight: FontWeight.w700))),
-                  DataColumn(label: Text('Class & Batch')),
-                  DataColumn(label: Text('Pass %')),
-                  DataColumn(label: Text('Top GPA')),
-                  DataColumn(label: Text('Certification Status')),
-                ],
-                rows: const [
-                  DataRow(cells: [
-                    DataCell(Text('Term 1 Summative Assessment', style: TextStyle(fontWeight: FontWeight.w600))),
-                    DataCell(Text('Class 10 (All Sections)')),
-                    DataCell(Text('98.4%', style: TextStyle(color: Color(0xFF059669), fontWeight: FontWeight.w700))),
-                    DataCell(Text('9.80')),
-                    DataCell(Chip(label: Text('Signed & Published', style: TextStyle(fontSize: 11)), backgroundColor: Color(0xFFECFDF5))),
-                  ]),
-                  DataRow(cells: [
-                    DataCell(Text('Unit Test 2 (Mid-Semester)', style: TextStyle(fontWeight: FontWeight.w600))),
-                    DataCell(Text('Class 9 (All Sections)')),
-                    DataCell(Text('96.1%', style: TextStyle(color: Color(0xFF059669), fontWeight: FontWeight.w700))),
-                    DataCell(Text('9.65')),
-                    DataCell(Chip(label: Text('Signed & Published', style: TextStyle(fontSize: 11)), backgroundColor: Color(0xFFECFDF5))),
-                  ]),
-                ],
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: DataTable(
+                  columnSpacing: 24,
+                  columns: const [
+                    DataColumn(label: Text('Exam Term', style: TextStyle(fontWeight: FontWeight.w700))),
+                    DataColumn(label: Text('Class & Batch')),
+                    DataColumn(label: Text('Pass %')),
+                    DataColumn(label: Text('Top GPA')),
+                    DataColumn(label: Text('Certification Status')),
+                  ],
+                  rows: const [
+                    DataRow(cells: [
+                      DataCell(Text('Term 1 Summative Assessment', style: TextStyle(fontWeight: FontWeight.w600))),
+                      DataCell(Text('Class 10 (All Sections)')),
+                      DataCell(Text('98.4%', style: TextStyle(color: Color(0xFF059669), fontWeight: FontWeight.w700))),
+                      DataCell(Text('9.80')),
+                      DataCell(Chip(label: Text('Signed & Published', style: TextStyle(fontSize: 11)), backgroundColor: Color(0xFFECFDF5))),
+                    ]),
+                    DataRow(cells: [
+                      DataCell(Text('Unit Test 2 (Mid-Semester)', style: TextStyle(fontWeight: FontWeight.w600))),
+                      DataCell(Text('Class 9 (All Sections)')),
+                      DataCell(Text('96.1%', style: TextStyle(color: Color(0xFF059669), fontWeight: FontWeight.w700))),
+                      DataCell(Text('9.65')),
+                      DataCell(Chip(label: Text('Signed & Published', style: TextStyle(fontSize: 11)), backgroundColor: Color(0xFFECFDF5))),
+                    ]),
+                  ],
+                ),
               ),
             ],
           ),

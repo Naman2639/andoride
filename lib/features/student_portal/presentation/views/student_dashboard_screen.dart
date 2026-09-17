@@ -22,74 +22,142 @@ class StudentDashboardScreen extends StatelessWidget {
                 final studentEmail = state is Authenticated ? state.user.emailOrPhone : 'student.alex@gmail.com';
                 final designation = state is Authenticated ? (state.user.designation ?? 'Class 10-A') : 'Class 10-A';
 
-                return Card(
-                  elevation: 1,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                  color: Colors.white,
-                  child: Padding(
-                    padding: const EdgeInsets.all(20),
-                    child: Row(
-                      children: [
-                        CircleAvatar(
-                          radius: 28,
-                          backgroundColor: const Color(0xFF0284C7).withOpacity(0.15),
-                          child: Text(
-                            studentName.isNotEmpty ? studentName[0].toUpperCase() : 'S',
-                            style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w800, color: Color(0xFF0369A1)),
-                          ),
-                        ),
-                        const SizedBox(width: 16),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Welcome back, $studentName!',
-                                style: const TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.w800,
-                                  color: Color(0xFF0F172A),
-                                ),
+                return LayoutBuilder(
+                  builder: (context, constraints) {
+                    final isWide = constraints.maxWidth >= 600;
+                    final attendanceBadge = Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFECFDF5),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: const Color(0xFFA7F3D0)),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: const [
+                          Text('Attendance Rate', style: TextStyle(fontSize: 11, color: Color(0xFF065F46), fontWeight: FontWeight.w600)),
+                          Text('95.2%', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: Color(0xFF059669))),
+                        ],
+                      ),
+                    );
+
+                    return Card(
+                      elevation: 1,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                      color: Colors.white,
+                      child: Padding(
+                        padding: const EdgeInsets.all(20),
+                        child: isWide
+                            ? Row(
+                                children: [
+                                  CircleAvatar(
+                                    radius: 28,
+                                    backgroundColor: const Color(0xFF0284C7).withOpacity(0.15),
+                                    child: Text(
+                                      studentName.isNotEmpty ? studentName[0].toUpperCase() : 'S',
+                                      style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w800, color: Color(0xFF0369A1)),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 16),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          'Welcome back, $studentName!',
+                                          style: const TextStyle(
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.w800,
+                                            color: Color(0xFF0F172A),
+                                          ),
+                                        ),
+                                        const SizedBox(height: 4),
+                                        Text(
+                                          '$designation • Google Account: $studentEmail',
+                                          style: const TextStyle(fontSize: 13, color: Color(0xFF64748B)),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  attendanceBadge,
+                                ],
+                              )
+                            : Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    children: [
+                                      CircleAvatar(
+                                        radius: 24,
+                                        backgroundColor: const Color(0xFF0284C7).withOpacity(0.15),
+                                        child: Text(
+                                          studentName.isNotEmpty ? studentName[0].toUpperCase() : 'S',
+                                          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w800, color: Color(0xFF0369A1)),
+                                        ),
+                                      ),
+                                      const SizedBox(width: 14),
+                                      Expanded(
+                                        child: Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              'Welcome back, $studentName!',
+                                              style: const TextStyle(
+                                                fontSize: 18,
+                                                fontWeight: FontWeight.w800,
+                                                color: Color(0xFF0F172A),
+                                              ),
+                                            ),
+                                            const SizedBox(height: 2),
+                                            Text(
+                                              '$designation • Google: $studentEmail',
+                                              style: const TextStyle(fontSize: 12, color: Color(0xFF64748B)),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 12),
+                                  attendanceBadge,
+                                ],
                               ),
-                              const SizedBox(height: 4),
-                              Text(
-                                '$designation • Google Account: $studentEmail',
-                                style: const TextStyle(fontSize: 13, color: Color(0xFF64748B)),
-                              ),
-                            ],
-                          ),
-                        ),
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-                          decoration: BoxDecoration(
-                            color: const Color(0xFFECFDF5),
-                            borderRadius: BorderRadius.circular(12),
-                            border: Border.all(color: const Color(0xFFA7F3D0)),
-                          ),
-                          child: Column(
-                            children: const [
-                              Text('Attendance Rate', style: TextStyle(fontSize: 11, color: Color(0xFF065F46), fontWeight: FontWeight.w600)),
-                              Text('95.2%', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: Color(0xFF059669))),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+                      ),
+                    );
+                  },
                 );
               },
             ),
             const SizedBox(height: 24),
 
             // Metrics Summary Grid
-            Row(
-              children: [
-                _buildSummaryTile('Active Assignments', '3 Due This Week', Icons.assignment, const Color(0xFF2563EB)),
-                const SizedBox(width: 16),
-                _buildSummaryTile('Term GPA', '9.4 / 10.0 (Grade A1)', Icons.military_tech, const Color(0xFFD97706)),
-                const SizedBox(width: 16),
-                _buildSummaryTile('Fee Clearance', 'Fully Paid • No Dues', Icons.verified, const Color(0xFF059669)),
-              ],
+            LayoutBuilder(
+              builder: (context, constraints) {
+                final isWide = constraints.maxWidth >= 650;
+                final tile1 = _buildSummaryTile('Active Assignments', '3 Due This Week', Icons.assignment, const Color(0xFF2563EB));
+                final tile2 = _buildSummaryTile('Term GPA', '9.4 / 10.0 (Grade A1)', Icons.military_tech, const Color(0xFFD97706));
+                final tile3 = _buildSummaryTile('Fee Clearance', 'Fully Paid • No Dues', Icons.verified, const Color(0xFF059669));
+
+                return isWide
+                    ? Row(
+                        children: [
+                          Expanded(child: tile1),
+                          const SizedBox(width: 16),
+                          Expanded(child: tile2),
+                          const SizedBox(width: 16),
+                          Expanded(child: tile3),
+                        ],
+                      )
+                    : Column(
+                        children: [
+                          tile1,
+                          const SizedBox(height: 10),
+                          tile2,
+                          const SizedBox(height: 10),
+                          tile3,
+                        ],
+                      );
+              },
             ),
             const SizedBox(height: 24),
 
@@ -105,7 +173,10 @@ class StudentDashboardScreen extends StatelessWidget {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: const [
-                        Text('Assigned Homework & Class Tasks', style: TextStyle(fontSize: 17, fontWeight: FontWeight.w700)),
+                        Flexible(
+                          child: Text('Assigned Homework & Class Tasks', style: TextStyle(fontSize: 17, fontWeight: FontWeight.w700)),
+                        ),
+                        SizedBox(width: 8),
                         Chip(label: Text('Class 10-A Vault', style: TextStyle(fontSize: 11))),
                       ],
                     ),
@@ -155,49 +226,80 @@ class StudentDashboardScreen extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: const [
-                            Text('Term 1 Assessment Report Card', style: TextStyle(fontSize: 17, fontWeight: FontWeight.w700)),
-                            SizedBox(height: 2),
-                            Text('Signed and certified by School Principal & Class Teacher', style: TextStyle(color: Color(0xFF64748B), fontSize: 13)),
-                          ],
-                        ),
-                        ElevatedButton.icon(
-                          onPressed: () {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('Report Card PDF downloaded successfully!')),
-                            );
-                          },
-                          icon: const Icon(Icons.download, size: 16),
-                          label: const Text('Download Official PDF'),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFF0369A1),
-                            foregroundColor: Colors.white,
-                          ),
-                        ),
-                      ],
+                    LayoutBuilder(
+                      builder: (context, constraints) {
+                        final isWide = constraints.maxWidth >= 550;
+                        return isWide
+                            ? Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: const [
+                                      Text('Term 1 Assessment Report Card', style: TextStyle(fontSize: 17, fontWeight: FontWeight.w700)),
+                                      SizedBox(height: 2),
+                                      Text('Signed and certified by School Principal & Class Teacher', style: TextStyle(color: Color(0xFF64748B), fontSize: 13)),
+                                    ],
+                                  ),
+                                  ElevatedButton.icon(
+                                    onPressed: () {
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        const SnackBar(content: Text('Report Card PDF downloaded successfully!')),
+                                      );
+                                    },
+                                    icon: const Icon(Icons.download, size: 16),
+                                    label: const Text('Download Official PDF'),
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: const Color(0xFF0369A1),
+                                      foregroundColor: Colors.white,
+                                    ),
+                                  ),
+                                ],
+                              )
+                            : Column(
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                                children: [
+                                  const Text('Term 1 Assessment Report Card', style: TextStyle(fontSize: 17, fontWeight: FontWeight.w700)),
+                                  const SizedBox(height: 2),
+                                  const Text('Signed and certified by School Principal & Class Teacher', style: TextStyle(color: Color(0xFF64748B), fontSize: 13)),
+                                  const SizedBox(height: 12),
+                                  ElevatedButton.icon(
+                                    onPressed: () {
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        const SnackBar(content: Text('Report Card PDF downloaded successfully!')),
+                                      );
+                                    },
+                                    icon: const Icon(Icons.download, size: 16),
+                                    label: const Text('Download Official PDF'),
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: const Color(0xFF0369A1),
+                                      foregroundColor: Colors.white,
+                                    ),
+                                  ),
+                                ],
+                              );
+                      },
                     ),
                     const SizedBox(height: 16),
                     const Divider(),
-                    DataTable(
-                      columnSpacing: 20,
-                      columns: const [
-                        DataColumn(label: Text('Subject', style: TextStyle(fontWeight: FontWeight.w700))),
-                        DataColumn(label: Text('Max')),
-                        DataColumn(label: Text('Obtained')),
-                        DataColumn(label: Text('Grade')),
-                        DataColumn(label: Text('Remarks')),
-                      ],
-                      rows: const [
-                        DataRow(cells: [DataCell(Text('Mathematics')), DataCell(Text('100')), DataCell(Text('94')), DataCell(Text('A1')), DataCell(Text('Exceptional problem solving'))]),
-                        DataRow(cells: [DataCell(Text('Physics')), DataCell(Text('100')), DataCell(Text('91')), DataCell(Text('A1')), DataCell(Text('Strong conceptual grasp'))]),
-                        DataRow(cells: [DataCell(Text('Chemistry')), DataCell(Text('100')), DataCell(Text('88')), DataCell(Text('A2')), DataCell(Text('Good lab experiment work'))]),
-                        DataRow(cells: [DataCell(Text('English Core')), DataCell(Text('100')), DataCell(Text('95')), DataCell(Text('A1')), DataCell(Text('Excellent analytical writing'))]),
-                      ],
+                    SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: DataTable(
+                        columnSpacing: 20,
+                        columns: const [
+                          DataColumn(label: Text('Subject', style: TextStyle(fontWeight: FontWeight.w700))),
+                          DataColumn(label: Text('Max')),
+                          DataColumn(label: Text('Obtained')),
+                          DataColumn(label: Text('Grade')),
+                          DataColumn(label: Text('Remarks')),
+                        ],
+                        rows: const [
+                          DataRow(cells: [DataCell(Text('Mathematics')), DataCell(Text('100')), DataCell(Text('94')), DataCell(Text('A1')), DataCell(Text('Exceptional problem solving'))]),
+                          DataRow(cells: [DataCell(Text('Physics')), DataCell(Text('100')), DataCell(Text('91')), DataCell(Text('A1')), DataCell(Text('Strong conceptual grasp'))]),
+                          DataRow(cells: [DataCell(Text('Chemistry')), DataCell(Text('100')), DataCell(Text('88')), DataCell(Text('A2')), DataCell(Text('Good lab experiment work'))]),
+                          DataRow(cells: [DataCell(Text('English Core')), DataCell(Text('100')), DataCell(Text('95')), DataCell(Text('A1')), DataCell(Text('Excellent analytical writing'))]),
+                        ],
+                      ),
                     ),
                   ],
                 ),
@@ -210,31 +312,29 @@ class StudentDashboardScreen extends StatelessWidget {
   }
 
   Widget _buildSummaryTile(String title, String value, IconData icon, Color color) {
-    return Expanded(
-      child: Card(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        child: Padding(
-          padding: const EdgeInsets.all(18),
-          child: Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(color: color.withOpacity(0.1), borderRadius: BorderRadius.circular(12)),
-                child: Icon(icon, color: color, size: 24),
+    return Card(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      child: Padding(
+        padding: const EdgeInsets.all(18),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(color: color.withOpacity(0.1), borderRadius: BorderRadius.circular(12)),
+              child: Icon(icon, color: color, size: 24),
+            ),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(title, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Color(0xFF64748B))),
+                  const SizedBox(height: 4),
+                  Text(value, style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: color)),
+                ],
               ),
-              const SizedBox(width: 14),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(title, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Color(0xFF64748B))),
-                    const SizedBox(height: 4),
-                    Text(value, style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: color)),
-                  ],
-                ),
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

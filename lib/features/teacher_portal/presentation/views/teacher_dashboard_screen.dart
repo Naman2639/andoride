@@ -858,9 +858,10 @@ class _TeacherDashboardScreenState extends State<TeacherDashboardScreen> {
         return AlertDialog(
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
           title: Text('Grade: ${sub['studentName']}', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
               Row(
                 children: [
                   const Icon(Icons.picture_as_pdf, color: Color(0xFFDC2626)),
@@ -1251,81 +1252,165 @@ class _TeacherDashboardScreenState extends State<TeacherDashboardScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Teacher Profile & Assigned Class Banner
-            Card(
-              elevation: 2,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-              color: Colors.white,
-              child: Padding(
-                padding: const EdgeInsets.all(22),
-                child: Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFECFDF5),
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      child: const Icon(
-                        Icons.co_present,
-                        size: 34,
-                        color: Color(0xFF059669),
-                      ),
-                    ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
+            LayoutBuilder(
+              builder: (context, constraints) {
+                final isWide = constraints.maxWidth >= 650;
+                return Card(
+                  elevation: 2,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                  color: Colors.white,
+                  child: Padding(
+                    padding: const EdgeInsets.all(22),
+                    child: isWide
+                        ? Row(
                             children: [
-                              Text(
-                                teacherName,
-                                style: const TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w800,
-                                  color: Color(0xFF065F46),
+                              Container(
+                                padding: const EdgeInsets.all(16),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFFECFDF5),
+                                  borderRadius: BorderRadius.circular(16),
+                                ),
+                                child: const Icon(
+                                  Icons.co_present,
+                                  size: 34,
+                                  color: Color(0xFF059669),
                                 ),
                               ),
-                              const SizedBox(width: 8),
-                              Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                                decoration: BoxDecoration(
-                                  color: const Color(0xFF065F46),
-                                  borderRadius: BorderRadius.circular(6),
+                              const SizedBox(width: 16),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        Text(
+                                          teacherName,
+                                          style: const TextStyle(
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.w800,
+                                            color: Color(0xFF065F46),
+                                          ),
+                                        ),
+                                        const SizedBox(width: 8),
+                                        Container(
+                                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                                          decoration: BoxDecoration(
+                                            color: const Color(0xFF065F46),
+                                            borderRadius: BorderRadius.circular(6),
+                                          ),
+                                          child: const Text(
+                                            'FACULTY',
+                                            style: TextStyle(fontSize: 10, fontWeight: FontWeight.w800, color: Colors.white),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      teacherDesignation,
+                                      style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Color(0xFF0284C7)),
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      '$_selectedClass • Enrolled: ${_students.length} Students • ${_attendanceSubmittedToday ? "Attendance Synced ($lastTimestamp)" : "Attendance Ready"}',
+                                      style: const TextStyle(fontSize: 12, color: Color(0xFF64748B)),
+                                    ),
+                                  ],
                                 ),
-                                child: const Text(
-                                  'FACULTY',
-                                  style: TextStyle(fontSize: 10, fontWeight: FontWeight.w800, color: Colors.white),
+                              ),
+                              const SizedBox(width: 12),
+                              ElevatedButton.icon(
+                                onPressed: _showEnrollStudentDialog,
+                                icon: const Icon(Icons.person_add, size: 16),
+                                label: const Text('Enroll Student ID'),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: const Color(0xFF065F46),
+                                  foregroundColor: Colors.white,
+                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                                ),
+                              ),
+                            ],
+                          )
+                        : Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              Row(
+                                children: [
+                                  Container(
+                                    padding: const EdgeInsets.all(12),
+                                    decoration: BoxDecoration(
+                                      color: const Color(0xFFECFDF5),
+                                      borderRadius: BorderRadius.circular(14),
+                                    ),
+                                    child: const Icon(
+                                      Icons.co_present,
+                                      size: 28,
+                                      color: Color(0xFF059669),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 14),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Row(
+                                          children: [
+                                            Flexible(
+                                              child: Text(
+                                                teacherName,
+                                                style: const TextStyle(
+                                                  fontSize: 17,
+                                                  fontWeight: FontWeight.w800,
+                                                  color: Color(0xFF065F46),
+                                                ),
+                                              ),
+                                            ),
+                                            const SizedBox(width: 8),
+                                            Container(
+                                              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                              decoration: BoxDecoration(
+                                                color: const Color(0xFF065F46),
+                                                borderRadius: BorderRadius.circular(6),
+                                              ),
+                                              child: const Text(
+                                                'FACULTY',
+                                                style: TextStyle(fontSize: 9, fontWeight: FontWeight.w800, color: Colors.white),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        const SizedBox(height: 2),
+                                        Text(
+                                          teacherDesignation,
+                                          style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Color(0xFF0284C7)),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 10),
+                              Text(
+                                '$_selectedClass • Enrolled: ${_students.length} Students • ${_attendanceSubmittedToday ? "Attendance Synced ($lastTimestamp)" : "Attendance Ready"}',
+                                style: const TextStyle(fontSize: 12, color: Color(0xFF64748B)),
+                              ),
+                              const SizedBox(height: 14),
+                              ElevatedButton.icon(
+                                onPressed: _showEnrollStudentDialog,
+                                icon: const Icon(Icons.person_add, size: 16),
+                                label: const Text('Enroll Student ID'),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: const Color(0xFF065F46),
+                                  foregroundColor: Colors.white,
+                                  padding: const EdgeInsets.symmetric(vertical: 12),
+                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                                 ),
                               ),
                             ],
                           ),
-                          const SizedBox(height: 4),
-                          Text(
-                            teacherDesignation,
-                            style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Color(0xFF0284C7)),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            '$_selectedClass • Enrolled: ${_students.length} Students • ${_attendanceSubmittedToday ? "Attendance Synced ($lastTimestamp)" : "Attendance Ready"}',
-                            style: const TextStyle(fontSize: 12, color: Color(0xFF64748B)),
-                          ),
-                        ],
-                      ),
-                    ),
-                    ElevatedButton.icon(
-                      onPressed: _showEnrollStudentDialog,
-                      icon: const Icon(Icons.person_add, size: 16),
-                      label: const Text('Enroll Student ID'),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF065F46),
-                        foregroundColor: Colors.white,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+                  ),
+                );
+              },
             ),
             const SizedBox(height: 24),
 
@@ -1333,91 +1418,116 @@ class _TeacherDashboardScreenState extends State<TeacherDashboardScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: const [
-                Text(
-                  'Daily Classroom Operations Hub',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: Color(0xFF065F46)),
+                Flexible(
+                  child: Text(
+                    'Daily Classroom Operations Hub',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: Color(0xFF065F46)),
+                  ),
                 ),
+                SizedBox(width: 8),
                 Text(
-                  'Full Interactive Workflows',
+                  'Interactive Workflows',
                   style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Color(0xFF64748B)),
                 ),
               ],
             ),
             const SizedBox(height: 12),
 
-            // Action Grid
-            Row(
-              children: [
-                Expanded(
-                  child: _buildActionTile(
-                    title: 'One-Tap Attendance',
-                    subtitle: _attendanceSubmittedToday ? 'Status: Marked & Synced Today' : 'Alphabetical roll call. 1-Tap "Mark All Present".',
-                    icon: Icons.check_circle_outline,
-                    iconColor: const Color(0xFF059669),
-                    badgeText: _attendanceSubmittedToday ? 'SYNCED' : 'READY',
-                    badgeColor: _attendanceSubmittedToday ? const Color(0xFF16A34A) : const Color(0xFFD97706),
-                    onTap: _showOneTapAttendanceSheet,
-                  ),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: _buildActionTile(
-                    title: 'Publish Assignment',
-                    subtitle: 'Create problem sets, due dates, and document attachments.',
-                    icon: Icons.assignment_add,
-                    iconColor: const Color(0xFF2563EB),
-                    badgeText: '${_assignments.length} ACTIVE',
-                    badgeColor: const Color(0xFF2563EB),
-                    onTap: _showPublishAssignmentDialog,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
+            // Action Grid: 2 columns in landscape, 1 column in portrait
+            LayoutBuilder(
+              builder: (context, constraints) {
+                final isWide = constraints.maxWidth >= 600;
 
-            Row(
-              children: [
-                Expanded(
-                  child: _buildActionTile(
-                    title: 'Submission Status & Grading',
-                    subtitle: 'Inspect student solutions, grade out of 50, and give remarks.',
-                    icon: Icons.rate_review_outlined,
-                    iconColor: const Color(0xFF0284C7),
-                    badgeText: 'REVIEW',
-                    badgeColor: const Color(0xFF0284C7),
-                    onTap: _showSubmissionsAndGradingSheet,
-                  ),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: _buildActionTile(
-                    title: 'Enter Term Marks & Remarks',
-                    subtitle: 'Theory (/80) & practical (/20) inputs with GPA compilation.',
-                    icon: Icons.grading,
-                    iconColor: const Color(0xFFD97706),
-                    badgeText: 'GRADEBOOK',
-                    badgeColor: const Color(0xFFD97706),
-                    onTap: _showEnterTermMarksSheet,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
+                final tile1 = _buildActionTile(
+                  title: 'One-Tap Attendance',
+                  subtitle: _attendanceSubmittedToday ? 'Status: Marked & Synced Today' : 'Alphabetical roll call. 1-Tap "Mark All Present".',
+                  icon: Icons.check_circle_outline,
+                  iconColor: const Color(0xFF059669),
+                  badgeText: _attendanceSubmittedToday ? 'SYNCED' : 'READY',
+                  badgeColor: _attendanceSubmittedToday ? const Color(0xFF16A34A) : const Color(0xFFD97706),
+                  onTap: _showOneTapAttendanceSheet,
+                );
 
-            Row(
-              children: [
-                Expanded(
-                  child: _buildActionTile(
-                    title: 'Attendance Correction Window',
-                    subtitle: 'Audited window for accidental mis-marks or medical approvals.',
-                    icon: Icons.edit_calendar_outlined,
-                    iconColor: const Color(0xFF7C3AED),
-                    badgeText: '${_attendanceCorrections.length} AUDITED',
-                    badgeColor: const Color(0xFF7C3AED),
-                    onTap: _showAttendanceCorrectionDialog,
-                  ),
-                ),
-              ],
+                final tile2 = _buildActionTile(
+                  title: 'Publish Assignment',
+                  subtitle: 'Create problem sets, due dates, and document attachments.',
+                  icon: Icons.assignment_add,
+                  iconColor: const Color(0xFF2563EB),
+                  badgeText: '${_assignments.length} ACTIVE',
+                  badgeColor: const Color(0xFF2563EB),
+                  onTap: _showPublishAssignmentDialog,
+                );
+
+                final tile3 = _buildActionTile(
+                  title: 'Submission Status & Grading',
+                  subtitle: 'Inspect student solutions, grade out of 50, and give remarks.',
+                  icon: Icons.rate_review_outlined,
+                  iconColor: const Color(0xFF0284C7),
+                  badgeText: 'REVIEW',
+                  badgeColor: const Color(0xFF0284C7),
+                  onTap: _showSubmissionsAndGradingSheet,
+                );
+
+                final tile4 = _buildActionTile(
+                  title: 'Enter Term Marks & Remarks',
+                  subtitle: 'Theory (/80) & practical (/20) inputs with GPA compilation.',
+                  icon: Icons.grading,
+                  iconColor: const Color(0xFFD97706),
+                  badgeText: 'GRADEBOOK',
+                  badgeColor: const Color(0xFFD97706),
+                  onTap: _showEnterTermMarksSheet,
+                );
+
+                final tile5 = _buildActionTile(
+                  title: 'Attendance Correction Window',
+                  subtitle: 'Audited window for accidental mis-marks or medical approvals.',
+                  icon: Icons.edit_calendar_outlined,
+                  iconColor: const Color(0xFF7C3AED),
+                  badgeText: '${_attendanceCorrections.length} AUDITED',
+                  badgeColor: const Color(0xFF7C3AED),
+                  onTap: _showAttendanceCorrectionDialog,
+                );
+
+                return isWide
+                    ? Column(
+                        children: [
+                          Row(
+                            children: [
+                              Expanded(child: tile1),
+                              const SizedBox(width: 16),
+                              Expanded(child: tile2),
+                            ],
+                          ),
+                          const SizedBox(height: 16),
+                          Row(
+                            children: [
+                              Expanded(child: tile3),
+                              const SizedBox(width: 16),
+                              Expanded(child: tile4),
+                            ],
+                          ),
+                          const SizedBox(height: 16),
+                          Row(
+                            children: [
+                              Expanded(child: tile5),
+                            ],
+                          ),
+                        ],
+                      )
+                    : Column(
+                        children: [
+                          tile1,
+                          const SizedBox(height: 12),
+                          tile2,
+                          const SizedBox(height: 12),
+                          tile3,
+                          const SizedBox(height: 12),
+                          tile4,
+                          const SizedBox(height: 12),
+                          tile5,
+                        ],
+                      );
+              },
             ),
             const SizedBox(height: 24),
 
