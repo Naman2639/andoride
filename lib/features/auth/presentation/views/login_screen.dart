@@ -54,19 +54,186 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
+  String _selectedTeacherPosition = 'Class Teacher (Grade 10-A)';
+  String _selectedTeacherSubject = 'Mathematics';
+
   @override
   void dispose() {
     _emailController.dispose();
     super.dispose();
   }
 
-  void _signInWithGoogle(String email, {String? displayName}) {
+  void _signInWithGoogle(String email, {String? displayName, String? designation}) {
     context.read<AuthBloc>().add(
           GoogleSignInSubmitted(
             email: email.trim(),
             displayName: displayName,
+            designation: designation,
           ),
         );
+  }
+
+  void _showTeacherPositionSubjectSelector({
+    required String email,
+    required String name,
+  }) {
+    String tempPosition = _selectedTeacherPosition;
+    String tempSubject = _selectedTeacherSubject;
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (ctx) {
+        return StatefulBuilder(
+          builder: (ctx, setModalState) {
+            return Container(
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+              ),
+              padding: EdgeInsets.only(
+                left: 24,
+                right: 24,
+                top: 24,
+                bottom: MediaQuery.of(ctx).viewInsets.bottom + 24,
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        children: const [
+                          Icon(Icons.badge, color: Color(0xFF059669), size: 24),
+                          SizedBox(width: 10),
+                          Text(
+                            'Teacher Position & Subject',
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w700,
+                              color: Color(0xFF0F172A),
+                            ),
+                          ),
+                        ],
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.close, size: 20),
+                        onPressed: () => Navigator.pop(ctx),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    'Select your teaching role and active subject for Google account "$email":',
+                    style: const TextStyle(fontSize: 13, color: Color(0xFF64748B)),
+                  ),
+                  const SizedBox(height: 18),
+                  const Text(
+                    'FACULTY POSITION / DESIGNATION',
+                    style: TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w800,
+                      letterSpacing: 0.8,
+                      color: Color(0xFF475569),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  DropdownButtonFormField<String>(
+                    value: tempPosition,
+                    decoration: InputDecoration(
+                      prefixIcon: const Icon(Icons.school, color: Color(0xFF059669)),
+                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                    ),
+                    items: const [
+                      DropdownMenuItem(
+                        value: 'Class Teacher (Grade 10-A)',
+                        child: Text('Class Teacher (Grade 10-A)'),
+                      ),
+                      DropdownMenuItem(
+                        value: 'Head of Department (HOD)',
+                        child: Text('Head of Department (HOD)'),
+                      ),
+                      DropdownMenuItem(
+                        value: 'Senior Secondary Faculty',
+                        child: Text('Senior Secondary Faculty'),
+                      ),
+                      DropdownMenuItem(
+                        value: 'Primary Wing Lead',
+                        child: Text('Primary Wing Lead'),
+                      ),
+                      DropdownMenuItem(
+                        value: 'Academic Coordinator',
+                        child: Text('Academic Coordinator'),
+                      ),
+                    ],
+                    onChanged: (val) {
+                      if (val != null) setModalState(() => tempPosition = val);
+                    },
+                  ),
+                  const SizedBox(height: 18),
+                  const Text(
+                    'TEACHING SUBJECT',
+                    style: TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w800,
+                      letterSpacing: 0.8,
+                      color: Color(0xFF475569),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  DropdownButtonFormField<String>(
+                    value: tempSubject,
+                    decoration: InputDecoration(
+                      prefixIcon: const Icon(Icons.menu_book, color: Color(0xFF0284C7)),
+                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                    ),
+                    items: const [
+                      DropdownMenuItem(value: 'Mathematics', child: Text('Mathematics')),
+                      DropdownMenuItem(value: 'Physics & Science', child: Text('Physics & Science')),
+                      DropdownMenuItem(value: 'Chemistry & Biology', child: Text('Chemistry & Biology')),
+                      DropdownMenuItem(value: 'English Literature', child: Text('English Literature')),
+                      DropdownMenuItem(value: 'Computer Science & AI', child: Text('Computer Science & AI')),
+                      DropdownMenuItem(value: 'Social Studies & History', child: Text('Social Studies & History')),
+                    ],
+                    onChanged: (val) {
+                      if (val != null) setModalState(() => tempSubject = val);
+                    },
+                  ),
+                  const SizedBox(height: 24),
+                  ElevatedButton.icon(
+                    onPressed: () {
+                      setState(() {
+                        _selectedTeacherPosition = tempPosition;
+                        _selectedTeacherSubject = tempSubject;
+                      });
+                      Navigator.pop(ctx);
+                      _signInWithGoogle(
+                        email,
+                        displayName: name,
+                        designation: '$tempPosition • $tempSubject Faculty',
+                      );
+                    },
+                    icon: const Icon(Icons.login),
+                    label: Text('Continue as $tempSubject Teacher'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF065F46),
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
   }
 
   void _showGoogleAccountPicker() {
@@ -175,7 +342,14 @@ class _LoginScreenState extends State<LoginScreen> {
                         trailing: const Icon(Icons.chevron_right, size: 18, color: Color(0xFFCBD5E1)),
                         onTap: () {
                           Navigator.pop(context);
-                          _signInWithGoogle(profile.emailOrPhone, displayName: profile.name);
+                          if (profile.role == UserRole.teacher) {
+                            _showTeacherPositionSubjectSelector(
+                              email: profile.emailOrPhone,
+                              name: profile.name,
+                            );
+                          } else {
+                            _signInWithGoogle(profile.emailOrPhone, displayName: profile.name);
+                          }
                         },
                       );
                     },
@@ -548,6 +722,95 @@ class _LoginScreenState extends State<LoginScreen> {
                   const SizedBox(height: 24),
 
                   // Quick One-Tap Switcher for instant demonstration
+                  // Teacher Role & Subject Selection Banner
+                  Container(
+                    margin: const EdgeInsets.only(bottom: 16),
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFECFDF5),
+                      borderRadius: BorderRadius.circular(18),
+                      border: Border.all(color: const Color(0xFFA7F3D0)),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            const Icon(Icons.school, size: 20, color: Color(0xFF059669)),
+                            const SizedBox(width: 8),
+                            const Text(
+                              'TEACHER POSITION & SUBJECT',
+                              style: TextStyle(
+                                fontSize: 11,
+                                letterSpacing: 0.8,
+                                fontWeight: FontWeight.w800,
+                                color: Color(0xFF065F46),
+                              ),
+                            ),
+                            const Spacer(),
+                            TextButton.icon(
+                              onPressed: () => _showTeacherPositionSubjectSelector(
+                                email: 'teacher.sarah@gmail.com',
+                                name: 'Sarah Jenkins',
+                              ),
+                              icon: const Icon(Icons.tune, size: 14, color: Color(0xFF059669)),
+                              label: const Text(
+                                'Change',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w700,
+                                  color: Color(0xFF059669),
+                                ),
+                              ),
+                              style: TextButton.styleFrom(
+                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                visualDensity: VisualDensity.compact,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 8),
+                        Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(6),
+                                border: Border.all(color: const Color(0xFF6EE7B7)),
+                              ),
+                              child: Text(
+                                _selectedTeacherPosition,
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w700,
+                                  color: Color(0xFF065F46),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFF065F46),
+                                borderRadius: BorderRadius.circular(6),
+                              ),
+                              child: Text(
+                                _selectedTeacherSubject,
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w700,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  // Quick One-Tap Switcher for instant demonstration
                   Container(
                     padding: const EdgeInsets.all(18),
                     decoration: BoxDecoration(
@@ -617,7 +880,13 @@ class _LoginScreenState extends State<LoginScreen> {
     required Color color,
   }) {
     return InkWell(
-      onTap: () => _signInWithGoogle(email, displayName: name),
+      onTap: () {
+        if (roleText == 'Teacher') {
+          _showTeacherPositionSubjectSelector(email: email, name: name);
+        } else {
+          _signInWithGoogle(email, displayName: name);
+        }
+      },
       borderRadius: BorderRadius.circular(10),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),

@@ -63,6 +63,7 @@ class AuthRepositoryImpl implements AuthRepository {
   Future<User> loginWithGoogle({
     required String email,
     String? displayName,
+    String? designation,
   }) async {
     final user = await _userRegistryService.findByGoogleEmail(email);
     if (user == null) {
@@ -74,9 +75,23 @@ class AuthRepositoryImpl implements AuthRepository {
       );
     }
 
+    var finalUser = user;
+    if (designation != null && designation.isNotEmpty) {
+      finalUser = UserModel(
+        id: user.id,
+        name: user.name,
+        emailOrPhone: user.emailOrPhone,
+        role: user.role,
+        profilePhotoUrl: user.profilePhotoUrl,
+        designation: designation,
+        assignedClasses: user.assignedClasses,
+        studentIds: user.studentIds,
+      );
+    }
+
     final token = 'mock_google_jwt_${DateTime.now().millisecondsSinceEpoch}';
-    await _persistSession(user, token, null);
-    return user;
+    await _persistSession(finalUser, token, null);
+    return finalUser;
   }
 
   @override

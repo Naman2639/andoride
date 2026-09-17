@@ -55,6 +55,7 @@ class FakeAuthRepository implements AuthRepository {
   Future<User> loginWithGoogle({
     required String email,
     String? displayName,
+    String? designation,
   }) async {
     if (shouldFail) throw Exception('Google auth error');
     return mockUser ??
@@ -181,7 +182,7 @@ void main() {
         displayName: 'Admin User',
       )),
       expect: () => [
-        const AuthLoading(message: 'Connecting to Google Accounts...'),
+        const AuthLoading(message: 'Verifying Google Account with School Records...'),
         const Authenticated(user: testAdminUser),
       ],
     );

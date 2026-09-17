@@ -24,6 +24,7 @@ abstract class AuthRepository {
   Future<User> loginWithGoogle({
     required String email,
     String? displayName,
+    String? designation,
   });
 
   /// Re-validate existing local session upon app launch

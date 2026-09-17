@@ -33,6 +33,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       final user = await _authRepository.loginWithGoogle(
         email: event.email,
         displayName: event.displayName,
+        designation: event.designation,
       );
       emit(Authenticated(user: user));
     } catch (e) {
