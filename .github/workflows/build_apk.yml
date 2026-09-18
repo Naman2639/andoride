@@ -39,14 +39,24 @@ jobs:
       - name: Install Dependencies
         run: flutter pub get
 
+      - name: Analyze Project
+        run: flutter analyze
+
       - name: Run Unit Tests
-        run: flutter test --reporter=expanded
+        run: |
+          flutter test --reporter=expanded 2>&1 | tee test_output.log || {
+            echo "### Unit Test Failure" >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+            tail -n 60 test_output.log >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+            exit 1
+          }
 
       - name: Build Android Release APK
         run: |
           flutter build apk --release --no-tree-shake-icons --android-skip-build-dependency-validation || {
-            echo "::error::Release build failed. Rerunning with verbose output to reveal exact Gradle/AAPT error..."
-            flutter build apk --release --no-tree-shake-icons --android-skip-build-dependency-validation -v
+            echo "::error::Release build failed. Dumping gradle stacktrace..."
+            cd android && ./gradlew assembleRelease --stacktrace --info
           }
 
       - name: Upload APK Artifact
