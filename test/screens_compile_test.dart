@@ -16,6 +16,8 @@ import 'package:school_erp/features/parent_portal/presentation/views/parent_dash
 import 'package:school_erp/features/parent_portal/presentation/views/parent_shell_screen.dart';
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
   test('All screens and services compile and initialize without syntax errors', () {
     // Verify services
     final syncService = AssignmentSyncService();

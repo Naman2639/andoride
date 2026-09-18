@@ -24,12 +24,7 @@ class AssignmentSyncService {
   SecureStorageService? _storageService;
   static const String _storageKey = 'sync_assignments_store_v1';
 
-  final ValueNotifier<List<Map<String, dynamic>>> assignmentsNotifier =
-      ValueNotifier<List<Map<String, dynamic>>>([]);
-
-  List<Map<String, dynamic>> get currentAssignments => assignmentsNotifier.value;
-
-  final List<Map<String, dynamic>> _defaultAssignments = [
+  static final List<Map<String, dynamic>> _defaultAssignments = [
     {
       'id': 'ASGN_101',
       'title': 'Quadratic Equations & Polynomials Problem Set 4',
@@ -85,6 +80,12 @@ class AssignmentSyncService {
       'isSubmitted': false,
     },
   ];
+
+  final ValueNotifier<List<Map<String, dynamic>>> assignmentsNotifier =
+      ValueNotifier<List<Map<String, dynamic>>>(List.from(_defaultAssignments));
+
+  List<Map<String, dynamic>> get currentAssignments => assignmentsNotifier.value;
+
 
   Future<void> _loadFromStorage() async {
     if (_storageService != null) {
