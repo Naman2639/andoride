@@ -1,4 +1,3 @@
-import '../../../../core/errors/exceptions.dart';
 import '../../../../core/session/session_manager.dart';
 import '../../domain/entities/user.dart';
 import '../../domain/entities/user_role.dart';

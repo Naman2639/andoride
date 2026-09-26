@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import '../../../../core/storage/secure_storage_service.dart';
 import '../../../auth/data/datasources/user_registry_service.dart';
 import '../../../auth/data/models/user_model.dart';
-import '../../../auth/domain/entities/user_role.dart';
 
 class AdminDashboardScreen extends StatefulWidget {
   const AdminDashboardScreen({super.key});

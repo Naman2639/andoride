@@ -19,7 +19,7 @@ class _TeacherDashboardScreenState extends State<TeacherDashboardScreen> {
   late final AssignmentSyncService _assignmentSyncService;
   List<UserModel> _students = [];
   bool _isLoadingStudents = true;
-  String _selectedClass = 'Class 10-A';
+  final String _selectedClass = 'Class 10-A';
 
   // 1. One-Tap Attendance State
   final Map<String, String> _attendanceMap = {};
@@ -1131,7 +1131,8 @@ class _TeacherDashboardScreenState extends State<TeacherDashboardScreen> {
               ),
             ],
           ),
-          actions: [
+        ),
+        actions: [
             TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
             ElevatedButton(
               onPressed: () {

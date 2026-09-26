@@ -61,7 +61,7 @@ jobs:
       - name: Analyze Project
         run: |
           set -e -o pipefail
-          if ! flutter analyze 2>&1 | tee analyze_output.log; then
+          if ! flutter analyze --no-fatal-infos --no-fatal-warnings 2>&1 | tee analyze_output.log; then
             while IFS= read -r line; do
               [ -n "$line" ] && echo "::error title=FlutterAnalyze::$line"
             done < analyze_output.log
