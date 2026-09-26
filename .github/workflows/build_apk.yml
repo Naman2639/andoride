@@ -22,53 +22,79 @@ jobs:
           java-version: '17'
           cache: 'gradle'
 
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.14.1'
+          validate-wrappers: false
+
       - name: Set up Flutter SDK
         uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
           cache: true
 
-      - name: Configure Android Project
+      - name: Configure Android Project and Gradle Wrapper
         run: |
-          # Ensure Gradle wrapper uses a compatible version (8.14.1)
-          sed -i 's|gradle-.*-all.zip|gradle-8.14.1-all.zip|' android/gradle/wrapper/gradle-wrapper.properties
+          set -e
+          # Generate Gradle wrapper in android directory
+          cd android
+          gradle wrapper --gradle-version 8.14.1 --distribution-type all
+          chmod +x gradlew
+          cd ..
+          
           # Ensure required Android properties are set
           grep -q 'android.useAndroidX' android/gradle.properties || echo "android.useAndroidX=true" >> android/gradle.properties
           grep -q 'android.enableJetifier' android/gradle.properties || echo "android.enableJetifier=true" >> android/gradle.properties
+          
+          # Accept Android licenses and ensure SDK platform 35 is ready
+          yes | sdkmanager --licenses || true
+          sdkmanager "platforms;android-35" "build-tools;35.0.0" || true
 
       - name: Install Dependencies
         run: flutter pub get
 
       - name: Analyze Project
         run: |
-          flutter analyze 2>&1 | tee analyze_output.log || {
+          set -e -o pipefail
+          if ! flutter analyze 2>&1 | tee analyze_output.log; then
             while IFS= read -r line; do
               [ -n "$line" ] && echo "::error title=FlutterAnalyze::$line"
             done < analyze_output.log
             exit 1
-          }
+          fi
 
       - name: Run Unit Tests
         run: |
-          flutter test --reporter=expanded 2>&1 | tee test_output.log || {
+          set -e -o pipefail
+          if ! flutter test --reporter=expanded 2>&1 | tee test_output.log; then
             while IFS= read -r line; do
               [ -n "$line" ] && echo "::error title=FlutterTest::$line"
             done < test_output.log
             exit 1
-          }
+          fi
 
       - name: Build Android Release APK
         run: |
-          flutter build apk --release --no-tree-shake-icons --android-skip-build-dependency-validation 2>&1 | tee build_output.log || {
+          set -e -o pipefail
+          if ! flutter build apk --release --no-tree-shake-icons --android-skip-build-dependency-validation 2>&1 | tee build_output.log; then
             echo "::error title=BuildFailed::Release APK build failed. Showing last 60 lines:"
             tail -n 60 build_output.log | while IFS= read -r line; do
               [ -n "$line" ] && echo "::error title=GradleBuild::$line"
             done
             exit 1
-          }
+          fi
+
+      - name: Verify APK Generated
+        run: |
+          echo "=== Verifying APK output ==="
+          ls -lh build/app/outputs/flutter-apk/
+          test -f build/app/outputs/flutter-apk/app-release.apk
 
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
         with:
           name: EduGovernance-ERP-Release-APK
           path: build/app/outputs/flutter-apk/app-release.apk
+          if-no-files-found: error
+
