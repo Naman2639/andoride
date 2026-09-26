@@ -37,6 +37,10 @@ jobs:
       - name: Configure Android Project and Gradle Wrapper
         run: |
           set -e
+          # Pre-populate android/local.properties so Gradle and Flutter find SDK paths
+          echo "flutter.sdk=$FLUTTER_ROOT" > android/local.properties
+          echo "sdk.dir=$ANDROID_HOME" >> android/local.properties
+          
           # Generate Gradle wrapper in android directory
           cd android
           gradle wrapper --gradle-version 8.14.1 --distribution-type all
